@@ -1,16 +1,11 @@
-use crate::audio::helpers::read_wav_samples;
 use crate::audio::types::{AudioState, RecordingMode};
 use crate::dictionary::{fix_transcription_with_dictionary, get_cc_rules_path, Dictionary};
-use crate::engine::transcription_engine::TranscriptionEngine;
-use crate::engine::ParakeetModelParams;
 use crate::formatting_rules;
 use crate::history;
-use crate::model::Model;
 use crate::stats;
 use anyhow::{Context, Result};
-use log::{debug, error, info, warn};
+use log::{debug, error, warn};
 use std::path::Path;
-use std::sync::Arc;
 use tauri::{AppHandle, Emitter, Manager};
 
 pub fn process_recording(app: &AppHandle, file_path: &Path) -> Result<String> {
@@ -43,41 +38,18 @@ pub fn process_recording(app: &AppHandle, file_path: &Path) -> Result<String> {
 pub fn transcribe_audio(app: &AppHandle, audio_path: &Path) -> Result<String> {
     let _ = app.emit("llm-processing-start", ());
 
-    let state = app.state::<AudioState>();
+    let rt = tokio::runtime::Runtime::new().context("Failed to create tokio runtime")?;
 
-    // Ensure engine is loaded
-    {
-        let mut engine_guard = state.engine.lock();
-        if engine_guard.is_none() {
-            let model = app.state::<Arc<Model>>();
-            let model_path = model
-                .get_model_path()
-                .map_err(|e| anyhow::anyhow!("Failed to get model path: {}", e))?;
+    let result = rt
+        .block_on(crate::stt::transcribe_audio_with_router(app, audio_path))
+        .map_err(|e| {
+            let _ = app.emit("llm-processing-end", ());
+            anyhow::anyhow!("Transcription failed: {}", e)
+        })?;
 
-            let mut new_engine = crate::engine::ParakeetEngine::new();
-            new_engine
-                .load_model_with_params(&model_path, ParakeetModelParams::int8())
-                .map_err(|e| anyhow::anyhow!("Failed to load model: {}", e))?;
-
-            *engine_guard = Some(new_engine);
-            info!("Model loaded and cached in memory");
-        }
-    }
-
-    let samples = read_wav_samples(audio_path)?;
-
-    let mut engine_guard = state.engine.lock();
-    let engine = engine_guard
-        .as_mut()
-        .ok_or_else(|| anyhow::anyhow!("Engine not loaded"))?;
-
-    let result = engine.transcribe_samples(samples, None).map_err(|e| {
-        let _ = app.emit("llm-processing-end", ());
-        anyhow::anyhow!("Transcription failed: {}", e)
-    })?;
     let _ = app.emit("llm-processing-end", ());
 
-    Ok(result.text)
+    Ok(result)
 }
 
 fn apply_dictionary_and_rules(app: &AppHandle, text: String) -> Result<String> {

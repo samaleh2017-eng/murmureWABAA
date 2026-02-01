@@ -15,6 +15,7 @@ mod overlay;
 mod settings;
 mod shortcuts;
 mod stats;
+mod stt;
 mod utils;
 
 use crate::shortcuts::init_shortcuts;
@@ -223,7 +224,18 @@ pub fn run() {
             set_log_level,
             start_model_download,
             cancel_model_download,
-            get_download_progress
+            get_download_progress,
+            get_stt_settings,
+            set_stt_settings,
+            get_stt_mode,
+            set_stt_mode,
+            get_active_stt_provider,
+            set_active_stt_provider,
+            test_stt_provider_connection,
+            fetch_stt_provider_models,
+            save_stt_provider_config,
+            get_stt_provider_config,
+            get_available_stt_providers
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
