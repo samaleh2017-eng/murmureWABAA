@@ -12,6 +12,7 @@ import { Shortcuts } from './features/settings/shortcuts/shortcuts';
 import { CustomDictionary } from './features/settings/custom-dictionary/custom-dictionary';
 import { FormattingRules } from './features/settings/formatting-rules/formatting-rules';
 import { System } from './features/settings/system/system';
+import { STTSettings } from './features/settings/stt/stt-settings';
 import { LLMConnect } from './features/llm-connect/llm-connect';
 import { ModelSetupLayout } from './features/model-setup/model-setup-layout';
 import { ModelSetup } from './features/model-setup/model-setup';
@@ -68,6 +69,12 @@ const settingsSystemRoute = createRoute({
     component: System,
 });
 
+const settingsSTTRoute = createRoute({
+    getParentRoute: () => layoutRoute,
+    path: '/settings/stt',
+    component: STTSettings,
+});
+
 const settingsIndexRoute = createRoute({
     getParentRoute: () => layoutRoute,
     path: '/settings',
@@ -98,6 +105,7 @@ const routeTree = rootRoute.addChildren([
         settingsIndexRoute,
         settingsShortcutsRoute,
         settingsSystemRoute,
+        settingsSTTRoute,
         personalizeIndexRoute,
         personalizeCustomDictionaryRoute,
         personalizeFormattingRulesRoute,
