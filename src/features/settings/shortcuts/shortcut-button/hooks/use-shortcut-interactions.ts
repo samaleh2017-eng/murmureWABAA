@@ -99,7 +99,9 @@ export const useShortcutInteractions = (
     useEffect(() => {
         if (!isRecording) return;
 
-        invoke('suspend_transcription').catch(() => {});
+        invoke('suspend_transcription').catch((error) => {
+            console.error('Failed to suspend transcription:', error);
+        });
 
         window.addEventListener('keydown', onKeyDown, { capture: true });
         window.addEventListener('keyup', onKeyUp, { capture: true });
@@ -107,7 +109,9 @@ export const useShortcutInteractions = (
         return () => {
             window.removeEventListener('keydown', onKeyDown, { capture: true });
             window.removeEventListener('keyup', onKeyUp, { capture: true });
-            invoke('resume_transcription').catch(() => {});
+            invoke('resume_transcription').catch((error) => {
+                console.error('Failed to resume transcription:', error);
+            });
         };
     }, [isRecording]);
 

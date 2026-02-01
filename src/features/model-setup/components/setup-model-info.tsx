@@ -11,13 +11,7 @@ interface SetupModelInfoProps {
     progress: DownloadProgress;
 }
 
-const ProgressBar = ({
-    value,
-    label,
-}: {
-    value: number;
-    label: string;
-}) => {
+const ProgressBar = ({ value, label }: { value: number; label: string }) => {
     return (
         <div className="space-y-1">
             <div className="flex justify-between text-xs text-zinc-400">

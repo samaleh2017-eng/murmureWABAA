@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Eye, EyeOff, RefreshCw, Plug, Check, X, Loader2, Upload } from 'lucide-react';
+import {
+    Eye,
+    EyeOff,
+    RefreshCw,
+    Plug,
+    Check,
+    X,
+    Loader2,
+    Upload,
+} from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { Input } from '@/components/input';
 import { Page } from '@/components/page';
@@ -27,8 +36,14 @@ interface STTProviderConfigFormProps {
     isLoading: boolean;
     availableModels: string[];
     onSaveConfig: (config: STTProviderConfig) => Promise<void>;
-    onTestConnection: (provider: STTProvider, config: STTProviderConfig) => Promise<boolean>;
-    onFetchModels: (provider: STTProvider, config: STTProviderConfig) => Promise<string[]>;
+    onTestConnection: (
+        provider: STTProvider,
+        config: STTProviderConfig
+    ) => Promise<boolean>;
+    onFetchModels: (
+        provider: STTProvider,
+        config: STTProviderConfig
+    ) => Promise<string[]>;
 }
 
 export const STTProviderConfigForm = ({
@@ -46,7 +61,8 @@ export const STTProviderConfigForm = ({
     const [localUrl, setLocalUrl] = useState('');
     const [localApiKey, setLocalApiKey] = useState('');
     const [localModel, setLocalModel] = useState('');
-    const [googleAuthMethod, setGoogleAuthMethod] = useState<GoogleAuthMethod>('api_key');
+    const [googleAuthMethod, setGoogleAuthMethod] =
+        useState<GoogleAuthMethod>('api_key');
     const [googleProjectId, setGoogleProjectId] = useState('');
     const [serviceAccountPath, setServiceAccountPath] = useState('');
     const [isTesting, setIsTesting] = useState(false);
@@ -68,7 +84,10 @@ export const STTProviderConfigForm = ({
             url: localUrl || defaults.url,
             api_key: localApiKey,
             model: localModel || defaults.model,
-            available_models: availableModels.length > 0 ? availableModels : (config?.available_models || []),
+            available_models:
+                availableModels.length > 0
+                    ? availableModels
+                    : config?.available_models || [],
             enabled: true,
         };
 
@@ -151,7 +170,9 @@ export const STTProviderConfigForm = ({
             case 'error':
                 return <X className="h-4 w-4 text-red-500" />;
             case 'testing':
-                return <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />;
+                return (
+                    <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+                );
             default:
                 return <span className="h-4 w-4 rounded-full bg-zinc-600" />;
         }
@@ -162,15 +183,18 @@ export const STTProviderConfigForm = ({
             if (googleAuthMethod === 'api_key') {
                 return localApiKey.length > 0;
             } else {
-                return googleProjectId.length > 0 && serviceAccountPath.length > 0;
+                return (
+                    googleProjectId.length > 0 && serviceAccountPath.length > 0
+                );
             }
         }
         return localApiKey.length > 0;
     };
 
-    const displayModels = availableModels.length > 0
-        ? availableModels
-        : (config?.available_models || [defaults.model]);
+    const displayModels =
+        availableModels.length > 0
+            ? availableModels
+            : config?.available_models || [defaults.model];
 
     return (
         <div className="space-y-4">
@@ -207,20 +231,27 @@ export const STTProviderConfigForm = ({
                         </label>
                         <Select
                             value={googleAuthMethod}
-                            onValueChange={(val) => setGoogleAuthMethod(val as GoogleAuthMethod)}
+                            onValueChange={(val) =>
+                                setGoogleAuthMethod(val as GoogleAuthMethod)
+                            }
                         >
                             <SelectTrigger className="w-full">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="api_key">{t('API Key')}</SelectItem>
-                                <SelectItem value="service_account">{t('Service Account')}</SelectItem>
+                                <SelectItem value="api_key">
+                                    {t('API Key')}
+                                </SelectItem>
+                                <SelectItem value="service_account">
+                                    {t('Service Account')}
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                 )}
 
-                {provider === 'google_cloud' && googleAuthMethod === 'service_account' ? (
+                {provider === 'google_cloud' &&
+                googleAuthMethod === 'service_account' ? (
                     <>
                         <div>
                             <label className="text-sm text-zinc-400 mb-1 block">
@@ -228,9 +259,13 @@ export const STTProviderConfigForm = ({
                             </label>
                             <Input
                                 value={googleProjectId}
-                                onChange={(e) => setGoogleProjectId(e.target.value)}
+                                onChange={(e) =>
+                                    setGoogleProjectId(e.target.value)
+                                }
                                 onBlur={handleApiKeyBlur}
-                                placeholder={t('Enter your Google Cloud project ID')}
+                                placeholder={t(
+                                    'Enter your Google Cloud project ID'
+                                )}
                                 className="w-full"
                             />
                         </div>
@@ -296,7 +331,9 @@ export const STTProviderConfigForm = ({
                                 className="flex-1"
                                 data-testid="stt-provider-model-select"
                             >
-                                <SelectValue placeholder={t('Select a model')} />
+                                <SelectValue
+                                    placeholder={t('Select a model')}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 {displayModels.map((model) => (

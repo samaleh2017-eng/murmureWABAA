@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Check, Loader2, Plug, RefreshCw, Eye, EyeOff, Sparkles, Upload } from 'lucide-react';
+import {
+    ArrowLeft,
+    Check,
+    Loader2,
+    Plug,
+    RefreshCw,
+    Eye,
+    EyeOff,
+    Sparkles,
+    Upload,
+} from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Typography } from '@/components/typography';
@@ -28,7 +38,10 @@ interface SetupOnlineProviderProps {
     onBack: () => void;
 }
 
-export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderProps) => {
+export const SetupOnlineProvider = ({
+    onComplete,
+    onBack,
+}: SetupOnlineProviderProps) => {
     const { t } = useTranslation();
     const {
         connectionStatus,
@@ -40,11 +53,13 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
         setConnectionStatus,
     } = useSTTSettings();
 
-    const [selectedProvider, setSelectedProvider] = useState<Exclude<STTProvider, 'parakeet'>>('openai');
+    const [selectedProvider, setSelectedProvider] =
+        useState<Exclude<STTProvider, 'parakeet'>>('openai');
     const [localUrl, setLocalUrl] = useState('');
     const [localApiKey, setLocalApiKey] = useState('');
     const [localModel, setLocalModel] = useState('');
-    const [googleAuthMethod, setGoogleAuthMethod] = useState<GoogleAuthMethod>('api_key');
+    const [googleAuthMethod, setGoogleAuthMethod] =
+        useState<GoogleAuthMethod>('api_key');
     const [googleProjectId, setGoogleProjectId] = useState('');
     const [serviceAccountPath, setServiceAccountPath] = useState('');
     const [showApiKey, setShowApiKey] = useState(false);
@@ -132,7 +147,9 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
             if (googleAuthMethod === 'api_key') {
                 return localApiKey.length > 0;
             } else {
-                return googleProjectId.length > 0 && serviceAccountPath.length > 0;
+                return (
+                    googleProjectId.length > 0 && serviceAccountPath.length > 0
+                );
             }
         }
         return localApiKey.length > 0;
@@ -152,7 +169,9 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                         {t('Configure Cloud Provider')}
                     </Typography.MainTitle>
                     <Typography.Paragraph className="text-zinc-400">
-                        {t('Choose your cloud STT provider and enter your credentials')}
+                        {t(
+                            'Choose your cloud STT provider and enter your credentials'
+                        )}
                     </Typography.Paragraph>
                 </div>
 
@@ -163,16 +182,24 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                         </label>
                         <Select
                             value={selectedProvider}
-                            onValueChange={(val) => setSelectedProvider(val as Exclude<STTProvider, 'parakeet'>)}
+                            onValueChange={(val) =>
+                                setSelectedProvider(
+                                    val as Exclude<STTProvider, 'parakeet'>
+                                )
+                            }
                         >
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder={t('Select provider')} />
+                                <SelectValue
+                                    placeholder={t('Select provider')}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 {ONLINE_PROVIDERS.map((provider) => (
                                     <SelectItem key={provider} value={provider}>
                                         <div className="flex items-center gap-2">
-                                            {provider === 'gemini' && <Sparkles className="w-4 h-4 text-purple-400" />}
+                                            {provider === 'gemini' && (
+                                                <Sparkles className="w-4 h-4 text-purple-400" />
+                                            )}
                                             {STT_PROVIDER_LABELS[provider]}
                                         </div>
                                     </SelectItem>
@@ -191,20 +218,27 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                             </label>
                             <Select
                                 value={googleAuthMethod}
-                                onValueChange={(val) => setGoogleAuthMethod(val as GoogleAuthMethod)}
+                                onValueChange={(val) =>
+                                    setGoogleAuthMethod(val as GoogleAuthMethod)
+                                }
                             >
                                 <SelectTrigger className="w-full">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="api_key">{t('API Key')}</SelectItem>
-                                    <SelectItem value="service_account">{t('Service Account')}</SelectItem>
+                                    <SelectItem value="api_key">
+                                        {t('API Key')}
+                                    </SelectItem>
+                                    <SelectItem value="service_account">
+                                        {t('Service Account')}
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     )}
 
-                    {selectedProvider === 'google_cloud' && googleAuthMethod === 'service_account' ? (
+                    {selectedProvider === 'google_cloud' &&
+                    googleAuthMethod === 'service_account' ? (
                         <>
                             <div>
                                 <label className="text-sm text-zinc-400 mb-2 block">
@@ -212,8 +246,12 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                                 </label>
                                 <Input
                                     value={googleProjectId}
-                                    onChange={(e) => setGoogleProjectId(e.target.value)}
-                                    placeholder={t('Enter your Google Cloud project ID')}
+                                    onChange={(e) =>
+                                        setGoogleProjectId(e.target.value)
+                                    }
+                                    placeholder={t(
+                                        'Enter your Google Cloud project ID'
+                                    )}
                                     className="w-full"
                                 />
                             </div>
@@ -240,7 +278,9 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                                 <Input
                                     type={showApiKey ? 'text' : 'password'}
                                     value={localApiKey}
-                                    onChange={(e) => setLocalApiKey(e.target.value)}
+                                    onChange={(e) =>
+                                        setLocalApiKey(e.target.value)
+                                    }
                                     placeholder={t('Enter your API key')}
                                     className="w-full pr-10"
                                 />
@@ -258,7 +298,9 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                             </div>
                             {selectedProvider === 'gemini' && (
                                 <p className="text-xs text-zinc-500 mt-2">
-                                    {t('Get your API key from Google AI Studio')}
+                                    {t(
+                                        'Get your API key from Google AI Studio'
+                                    )}
                                 </p>
                             )}
                         </div>
@@ -279,7 +321,10 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                                 <SelectContent>
                                     {availableModels.length > 0 ? (
                                         availableModels.map((model) => (
-                                            <SelectItem key={model} value={model}>
+                                            <SelectItem
+                                                key={model}
+                                                value={model}
+                                            >
                                                 {model}
                                             </SelectItem>
                                         ))
@@ -296,7 +341,9 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                                 onClick={handleFetchModels}
                                 disabled={isFetching || !canTestConnection()}
                             >
-                                <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+                                <RefreshCw
+                                    className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`}
+                                />
                             </Button>
                         </div>
                     </div>
@@ -315,13 +362,17 @@ export const SetupOnlineProvider = ({ onComplete, onBack }: SetupOnlineProviderP
                             ) : (
                                 <Plug className="h-4 w-4 mr-2" />
                             )}
-                            {connectionStatus === 'connected' ? t('Connection successful') : t('Test Connection')}
+                            {connectionStatus === 'connected'
+                                ? t('Connection successful')
+                                : t('Test Connection')}
                         </Button>
                     </div>
 
                     {connectionStatus === 'error' && (
                         <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                            {t('Connection failed. Please check your credentials.')}
+                            {t(
+                                'Connection failed. Please check your credentials.'
+                            )}
                         </div>
                     )}
                 </div>

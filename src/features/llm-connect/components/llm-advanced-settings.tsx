@@ -25,9 +25,18 @@ interface LLMAdvancedSettingsProps {
     onInstallModel: () => void;
     onResetOnboarding: () => void;
     onProviderChange: (provider: LLMProvider) => Promise<void>;
-    onSaveProviderConfig: (provider: LLMProvider, config: ProviderConfig) => Promise<void>;
-    onTestProviderConnection: (provider: LLMProvider, config: ProviderConfig) => Promise<boolean>;
-    onFetchProviderModels: (provider: LLMProvider, config: ProviderConfig) => Promise<LLMModel[]>;
+    onSaveProviderConfig: (
+        provider: LLMProvider,
+        config: ProviderConfig
+    ) => Promise<void>;
+    onTestProviderConnection: (
+        provider: LLMProvider,
+        config: ProviderConfig
+    ) => Promise<boolean>;
+    onFetchProviderModels: (
+        provider: LLMProvider,
+        config: ProviderConfig
+    ) => Promise<LLMModel[]>;
 }
 
 export const LLMAdvancedSettings = ({
@@ -70,7 +79,9 @@ export const LLMAdvancedSettings = ({
             {isOllama ? (
                 <SettingsUI.Item>
                     <SettingsUI.Description>
-                        <Typography.Title>{t('Ollama API URL')}</Typography.Title>
+                        <Typography.Title>
+                            {t('Ollama API URL')}
+                        </Typography.Title>
                         <Typography.Paragraph>
                             {t('Local Ollama server address')}
                         </Typography.Paragraph>
@@ -82,7 +93,10 @@ export const LLMAdvancedSettings = ({
                             className="w-[200px]"
                             placeholder="http://localhost:11434/api"
                         />
-                        <Page.SecondaryButton onClick={onTestConnection} size="sm">
+                        <Page.SecondaryButton
+                            onClick={onTestConnection}
+                            size="sm"
+                        >
                             {t('Test Connection')}
                         </Page.SecondaryButton>
                     </div>
@@ -91,7 +105,8 @@ export const LLMAdvancedSettings = ({
                 <SettingsUI.Item className="flex-col items-start">
                     <SettingsUI.Description className="mb-4">
                         <Typography.Title>
-                            {PROVIDER_LABELS[activeProvider]} {t('Configuration')}
+                            {PROVIDER_LABELS[activeProvider]}{' '}
+                            {t('Configuration')}
                         </Typography.Title>
                         <Typography.Paragraph>
                             {t('Configure your API credentials and model')}
@@ -104,7 +119,9 @@ export const LLMAdvancedSettings = ({
                             connectionStatus={connectionStatus}
                             isLoading={isLoading}
                             providerModels={providerModels}
-                            onSaveConfig={(config) => onSaveProviderConfig(activeProvider, config)}
+                            onSaveConfig={(config) =>
+                                onSaveProviderConfig(activeProvider, config)
+                            }
                             onTestConnection={onTestProviderConnection}
                             onFetchModels={onFetchProviderModels}
                         />
@@ -122,7 +139,10 @@ export const LLMAdvancedSettings = ({
                         </SettingsUI.Description>
 
                         <div className="flex items-center gap-3">
-                            <Page.SecondaryButton onClick={onInstallModel} size="sm">
+                            <Page.SecondaryButton
+                                onClick={onInstallModel}
+                                size="sm"
+                            >
                                 {t('Install another model')}
                             </Page.SecondaryButton>
                             <Page.SecondaryButton

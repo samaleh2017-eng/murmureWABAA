@@ -1,10 +1,19 @@
 import { invoke } from '@tauri-apps/api/core';
 import { useState, useEffect, useCallback } from 'react';
 
-export type STTProvider = 'parakeet' | 'openai' | 'google_cloud' | 'gemini' | 'groq';
+export type STTProvider =
+    | 'parakeet'
+    | 'openai'
+    | 'google_cloud'
+    | 'gemini'
+    | 'groq';
 export type STTMode = 'offline' | 'online';
 export type GoogleAuthMethod = 'api_key' | 'service_account';
-export type ConnectionStatus = 'disconnected' | 'connected' | 'testing' | 'error';
+export type ConnectionStatus =
+    | 'disconnected'
+    | 'connected'
+    | 'testing'
+    | 'error';
 
 export interface STTProviderConfig {
     url: string;
@@ -32,12 +41,15 @@ export const STT_PROVIDER_LABELS: Record<STTProvider, string> = {
     groq: 'Groq Whisper',
 };
 
-export const STT_PROVIDER_DEFAULTS: Record<Exclude<STTProvider, 'parakeet'>, {
-    url: string;
-    model: string;
-    needsApiKey: boolean;
-    description: string;
-}> = {
+export const STT_PROVIDER_DEFAULTS: Record<
+    Exclude<STTProvider, 'parakeet'>,
+    {
+        url: string;
+        model: string;
+        needsApiKey: boolean;
+        description: string;
+    }
+> = {
     openai: {
         url: 'https://api.openai.com/v1',
         model: 'whisper-1',
@@ -54,7 +66,8 @@ export const STT_PROVIDER_DEFAULTS: Record<Exclude<STTProvider, 'parakeet'>, {
         url: 'https://generativelanguage.googleapis.com/v1beta',
         model: 'gemini-2.5-flash',
         needsApiKey: true,
-        description: 'Gemini multimodal: transcription + compréhension contextuelle',
+        description:
+            'Gemini multimodal: transcription + compréhension contextuelle',
     },
     groq: {
         url: 'https://api.groq.com/openai/v1',
@@ -99,7 +112,8 @@ export const SUPPORTED_LANGUAGES = [
 export const useSTTSettings = () => {
     const [settings, setSettings] = useState<STTSettings>(DEFAULT_STT_SETTINGS);
     const [isLoading, setIsLoading] = useState(false);
-    const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
+    const [connectionStatus, setConnectionStatus] =
+        useState<ConnectionStatus>('disconnected');
     const [availableModels, setAvailableModels] = useState<string[]>([]);
 
     const loadSettings = useCallback(async () => {
@@ -115,67 +129,88 @@ export const useSTTSettings = () => {
         loadSettings();
     }, [loadSettings]);
 
-    const updateSettings = useCallback(async (updates: Partial<STTSettings>) => {
-        const newSettings = { ...settings, ...updates };
-        try {
-            await invoke('set_stt_settings', { settings: newSettings });
-            setSettings(newSettings);
-        } catch (error) {
-            console.error('Failed to save STT settings:', error);
-        }
-    }, [settings]);
+    const updateSettings = useCallback(
+        async (updates: Partial<STTSettings>) => {
+            const newSettings = { ...settings, ...updates };
+            try {
+                await invoke('set_stt_settings', { settings: newSettings });
+                setSettings(newSettings);
+            } catch (error) {
+                console.error('Failed to save STT settings:', error);
+            }
+        },
+        [settings]
+    );
 
-    const testConnection = useCallback(async (provider: STTProvider, config: STTProviderConfig) => {
-        setConnectionStatus('testing');
-        try {
-            const result = await invoke<boolean>('test_stt_provider_connection', {
-                provider,
-                config,
-            });
-            setConnectionStatus(result ? 'connected' : 'error');
-            return result;
-        } catch (error) {
-            console.error('Failed to test STT connection:', error);
-            setConnectionStatus('error');
-            return false;
-        }
-    }, []);
+    const testConnection = useCallback(
+        async (provider: STTProvider, config: STTProviderConfig) => {
+            setConnectionStatus('testing');
+            try {
+                const result = await invoke<boolean>(
+                    'test_stt_provider_connection',
+                    {
+                        provider,
+                        config,
+                    }
+                );
+                setConnectionStatus(result ? 'connected' : 'error');
+                return result;
+            } catch (error) {
+                console.error('Failed to test STT connection:', error);
+                setConnectionStatus('error');
+                return false;
+            }
+        },
+        []
+    );
 
-    const fetchModels = useCallback(async (provider: STTProvider, config: STTProviderConfig) => {
-        setIsLoading(true);
-        try {
-            const models = await invoke<string[]>('fetch_stt_provider_models', {
-                provider,
-                config,
-            });
-            setAvailableModels(models);
-            return models;
-        } catch (error) {
-            console.error('Failed to fetch STT models:', error);
-            return [];
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    const fetchModels = useCallback(
+        async (provider: STTProvider, config: STTProviderConfig) => {
+            setIsLoading(true);
+            try {
+                const models = await invoke<string[]>(
+                    'fetch_stt_provider_models',
+                    {
+                        provider,
+                        config,
+                    }
+                );
+                setAvailableModels(models);
+                return models;
+            } catch (error) {
+                console.error('Failed to fetch STT models:', error);
+                return [];
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        []
+    );
 
-    const saveProviderConfig = useCallback(async (provider: STTProvider, config: STTProviderConfig) => {
-        try {
-            await invoke('save_stt_provider_config', { provider, config });
-            setSettings((prev) => ({
-                ...prev,
-                provider_configs: {
-                    ...prev.provider_configs,
-                    [provider]: config,
-                },
-            }));
-        } catch (error) {
-            console.error('Failed to save STT provider config:', error);
-        }
-    }, []);
+    const saveProviderConfig = useCallback(
+        async (provider: STTProvider, config: STTProviderConfig) => {
+            try {
+                await invoke('save_stt_provider_config', { provider, config });
+                setSettings((prev) => ({
+                    ...prev,
+                    provider_configs: {
+                        ...prev.provider_configs,
+                        [provider]: config,
+                    },
+                }));
+            } catch (error) {
+                console.error('Failed to save STT provider config:', error);
+            }
+        },
+        []
+    );
 
-    const getProviderConfig = useCallback((provider: STTProvider): STTProviderConfig | undefined => {
-        return settings.provider_configs?.[provider];
-    }, [settings.provider_configs]);
+    const getProviderConfig = useCallback(
+        (provider: STTProvider): STTProviderConfig | undefined => {
+            return settings.provider_configs?.[provider];
+        },
+        [settings.provider_configs]
+    );
 
     return {
         settings,

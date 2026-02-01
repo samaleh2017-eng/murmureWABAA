@@ -40,9 +40,11 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "windows")]
     let builder = builder;
 
-    let _tray = builder
-        .icon(app.default_window_icon().unwrap().clone())
-        .build(app)?;
+    let icon = app
+        .default_window_icon()
+        .ok_or("No default window icon available")?
+        .clone();
+    let _tray = builder.icon(icon).build(app)?;
 
     Ok(())
 }

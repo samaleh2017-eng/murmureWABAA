@@ -25,8 +25,14 @@ interface ProviderConfigFormProps {
     isLoading: boolean;
     providerModels: LLMModel[];
     onSaveConfig: (config: ProviderConfig) => Promise<void>;
-    onTestConnection: (provider: LLMProvider, config: ProviderConfig) => Promise<boolean>;
-    onFetchModels: (provider: LLMProvider, config: ProviderConfig) => Promise<LLMModel[]>;
+    onTestConnection: (
+        provider: LLMProvider,
+        config: ProviderConfig
+    ) => Promise<boolean>;
+    onFetchModels: (
+        provider: LLMProvider,
+        config: ProviderConfig
+    ) => Promise<LLMModel[]>;
 }
 
 export const ProviderConfigForm = ({
@@ -121,15 +127,18 @@ export const ProviderConfigForm = ({
             case 'error':
                 return <X className="h-4 w-4 text-red-500" />;
             case 'testing':
-                return <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />;
+                return (
+                    <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+                );
             default:
                 return <span className="h-4 w-4 rounded-full bg-zinc-600" />;
         }
     };
 
-    const availableModels = providerModels.length > 0
-        ? providerModels
-        : (config?.available_models || []).map((name) => ({ name }));
+    const availableModels =
+        providerModels.length > 0
+            ? providerModels
+            : (config?.available_models || []).map((name) => ({ name }));
 
     return (
         <div className="space-y-4">
@@ -213,7 +222,10 @@ export const ProviderConfigForm = ({
                             </SelectTrigger>
                             <SelectContent>
                                 {availableModels.map((model) => (
-                                    <SelectItem key={model.name} value={model.name}>
+                                    <SelectItem
+                                        key={model.name}
+                                        value={model.name}
+                                    >
                                         {model.name}
                                     </SelectItem>
                                 ))}
@@ -222,7 +234,10 @@ export const ProviderConfigForm = ({
                         <Page.SecondaryButton
                             size="sm"
                             onClick={handleFetchModels}
-                            disabled={isFetching || (needsApiKey && localApiKey.length === 0)}
+                            disabled={
+                                isFetching ||
+                                (needsApiKey && localApiKey.length === 0)
+                            }
                             data-testid="fetch-models-button"
                         >
                             <RefreshCw
@@ -237,7 +252,9 @@ export const ProviderConfigForm = ({
                 <Page.SecondaryButton
                     size="sm"
                     onClick={handleTestConnection}
-                    disabled={isTesting || (needsApiKey && localApiKey.length === 0)}
+                    disabled={
+                        isTesting || (needsApiKey && localApiKey.length === 0)
+                    }
                     data-testid="test-provider-connection-button"
                 >
                     {isTesting ? (

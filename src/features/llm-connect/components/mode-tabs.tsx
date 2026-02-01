@@ -17,10 +17,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/dialog';
-import {
-    LLMConnectSettings,
-    LLMMode,
-} from '../hooks/use-llm-connect';
+import { LLMConnectSettings, LLMMode } from '../hooks/use-llm-connect';
 
 interface ModelItem {
     name: string;

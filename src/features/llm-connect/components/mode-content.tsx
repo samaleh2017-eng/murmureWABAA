@@ -14,10 +14,7 @@ import { RefreshCw, Wrench } from 'lucide-react';
 import { HighlightedPromptEditor } from './highlighted-prompt-editor';
 import clsx from 'clsx';
 import { RenderKeys } from '@/components/render-keys';
-import {
-    LLMConnectSettings,
-    LLMMode,
-} from '../hooks/use-llm-connect';
+import { LLMConnectSettings, LLMMode } from '../hooks/use-llm-connect';
 
 interface ModelItem {
     name: string;

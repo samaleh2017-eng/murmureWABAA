@@ -49,9 +49,11 @@ export const Overlay: React.FC = () => {
     return (
         <div className="w-[80px] h-[18px] bg-black rounded-sm flex items-center justify-center select-none overflow-hidden">
             {feedback ? (
-                <span className={`text-[10px] font-medium truncate px-1 animate-in fade-in zoom-in duration-200 ${
-                    isError ? 'text-red-500' : 'text-white'
-                }`}>
+                <span
+                    className={`text-[10px] font-medium truncate px-1 animate-in fade-in zoom-in duration-200 ${
+                        isError ? 'text-red-500' : 'text-white'
+                    }`}
+                >
                     {feedback}
                 </span>
             ) : (

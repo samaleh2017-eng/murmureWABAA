@@ -51,8 +51,8 @@ if (typeof window !== 'undefined') {
                     i18n.changeLanguage(lang);
                 }
             })
-            .catch(() => {
-                // If command fails, use default detection
+            .catch((error) => {
+                console.error('Failed to load language from settings:', error);
             });
     });
 }
