@@ -77,12 +77,17 @@ jobs:
                   }
 
             - name: Sign with Tauri (for updater)
-              if: ${{ inputs.dry == false && secrets.TAURI_PRIVATE_KEY != '' }}
+              if: ${{ inputs.dry == false }}
               env:
                   TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
                   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               shell: pwsh
               run: |
+                  if (-not $env:TAURI_PRIVATE_KEY) {
+                      Write-Host "No TAURI_PRIVATE_KEY provided, skipping signing."
+                      exit 0
+                  }
+
                   $releaseDir = "release-bundle"
 
                   # Sign MSI
