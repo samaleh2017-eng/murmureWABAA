@@ -79,11 +79,11 @@ jobs:
             - name: Sign with Tauri (for updater)
               if: ${{ inputs.dry == false }}
               env:
-                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               shell: pwsh
               run: |
-                  if (-not $env:TAURI_PRIVATE_KEY) {
+                  if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
                       Write-Host "No TAURI_PRIVATE_KEY provided, skipping signing."
                       exit 0
                   }
@@ -93,13 +93,13 @@ jobs:
                   # Sign MSI
                   $msi = Join-Path $releaseDir "Murmure_x64.msi"
                   if (Test-Path $msi) {
-                      pnpm tauri signer sign -k $env:TAURI_PRIVATE_KEY -p $env:TAURI_KEY_PASSWORD $msi
+                      pnpm tauri signer sign $msi
                   }
 
                   # Sign EXE
                   $exe = Join-Path $releaseDir "Murmure_x64-setup.exe"
                   if (Test-Path $exe) {
-                      pnpm tauri signer sign -k $env:TAURI_PRIVATE_KEY -p $env:TAURI_KEY_PASSWORD $exe
+                      pnpm tauri signer sign $exe
                   }
 
             - name: Upload artifact (1 day)
