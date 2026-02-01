@@ -1,4 +1,13 @@
-import { Monitor, Cloud, Lock, Zap, Download, Info, Globe, Target } from 'lucide-react';
+import {
+    Monitor,
+    Cloud,
+    Lock,
+    Zap,
+    Download,
+    Info,
+    Globe,
+    Target,
+} from 'lucide-react';
 import { Button } from '@/components/button';
 import { Typography } from '@/components/typography';
 import { useTranslation } from '@/i18n';
@@ -9,7 +18,9 @@ interface SetupModeSelectionProps {
     onModeSelect: (mode: STTMode) => void;
 }
 
-export const SetupModeSelection = ({ onModeSelect }: SetupModeSelectionProps) => {
+export const SetupModeSelection = ({
+    onModeSelect,
+}: SetupModeSelectionProps) => {
     const { t } = useTranslation();
 
     return (
@@ -116,9 +127,7 @@ export const SetupModeSelection = ({ onModeSelect }: SetupModeSelectionProps) =>
 
                 <div className="flex items-center gap-2 text-zinc-500 text-sm text-center">
                     <Info className="w-4 h-4 flex-shrink-0" />
-                    <span>
-                        {t('You can change this later in settings')}
-                    </span>
+                    <span>{t('You can change this later in settings')}</span>
                 </div>
             </div>
         </div>

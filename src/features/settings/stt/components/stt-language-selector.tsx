@@ -22,12 +22,11 @@ export const STTLanguageSelector = ({
     const { t } = useTranslation();
 
     return (
-        <Select
-            value={value}
-            onValueChange={onChange}
-            disabled={disabled}
-        >
-            <SelectTrigger className="w-full" data-testid="stt-language-selector">
+        <Select value={value} onValueChange={onChange} disabled={disabled}>
+            <SelectTrigger
+                className="w-full"
+                data-testid="stt-language-selector"
+            >
                 <SelectValue placeholder={t('Select language')} />
             </SelectTrigger>
             <SelectContent>

@@ -61,11 +61,17 @@ export const PROVIDER_LABELS: Record<LLMProvider, string> = {
     openrouter: 'OpenRouter',
 };
 
-export const PROVIDER_DEFAULTS: Record<LLMProvider, { url: string; needsApiKey: boolean }> = {
+export const PROVIDER_DEFAULTS: Record<
+    LLMProvider,
+    { url: string; needsApiKey: boolean }
+> = {
     ollama: { url: 'http://localhost:11434/api', needsApiKey: false },
     openai: { url: 'https://api.openai.com/v1', needsApiKey: true },
     anthropic: { url: 'https://api.anthropic.com/v1', needsApiKey: true },
-    google: { url: 'https://generativelanguage.googleapis.com/v1beta', needsApiKey: true },
+    google: {
+        url: 'https://generativelanguage.googleapis.com/v1beta',
+        needsApiKey: true,
+    },
     openrouter: { url: 'https://openrouter.ai/api/v1', needsApiKey: true },
 };
 
@@ -82,7 +88,8 @@ const DEFAULT_SETTINGS: LLMConnectSettings = {
 
 export const useLLMConnect = () => {
     const { t } = useTranslation();
-    const [settings, setSettings] = useState<LLMConnectSettings>(DEFAULT_SETTINGS);
+    const [settings, setSettings] =
+        useState<LLMConnectSettings>(DEFAULT_SETTINGS);
     const [models, setModels] = useState<OllamaModel[]>([]);
     const [providerModels, setProviderModels] = useState<LLMModel[]>([]);
     const [connectionStatus, setConnectionStatus] =
@@ -126,7 +133,8 @@ export const useLLMConnect = () => {
             setIsSettingsLoaded(true);
 
             const activeProvider = loadedSettings.active_provider || 'ollama';
-            const providerConfig = loadedSettings.provider_configs?.[activeProvider];
+            const providerConfig =
+                loadedSettings.provider_configs?.[activeProvider];
 
             if (activeProvider === 'ollama') {
                 const urlToTest = providerConfig?.url || loadedSettings.url;
@@ -202,14 +210,20 @@ export const useLLMConnect = () => {
     );
 
     const testProviderConnection = useCallback(
-        async (provider: LLMProvider, config: ProviderConfig): Promise<boolean> => {
+        async (
+            provider: LLMProvider,
+            config: ProviderConfig
+        ): Promise<boolean> => {
             setConnectionStatus('testing');
 
             try {
-                const result = await invoke<boolean>('test_provider_connection', {
-                    provider,
-                    config,
-                });
+                const result = await invoke<boolean>(
+                    'test_provider_connection',
+                    {
+                        provider,
+                        config,
+                    }
+                );
                 setConnectionStatus(result ? 'connected' : 'error');
                 return result;
             } catch (error) {
@@ -222,7 +236,10 @@ export const useLLMConnect = () => {
     );
 
     const fetchProviderModels = useCallback(
-        async (provider: LLMProvider, config: ProviderConfig): Promise<LLMModel[]> => {
+        async (
+            provider: LLMProvider,
+            config: ProviderConfig
+        ): Promise<LLMModel[]> => {
             setIsLoading(true);
 
             try {
@@ -270,7 +287,13 @@ export const useLLMConnect = () => {
                 throw error;
             }
         },
-        [settings, testConnection, fetchModels, testProviderConnection, fetchProviderModels]
+        [
+            settings,
+            testConnection,
+            fetchModels,
+            testProviderConnection,
+            fetchProviderModels,
+        ]
     );
 
     const saveProviderConfig = useCallback(
@@ -299,7 +322,9 @@ export const useLLMConnect = () => {
         [settings.provider_configs]
     );
 
-    const getAvailableProviders = useCallback(async (): Promise<LLMProvider[]> => {
+    const getAvailableProviders = useCallback(async (): Promise<
+        LLMProvider[]
+    > => {
         try {
             return await invoke<LLMProvider[]>('get_available_providers');
         } catch (error) {

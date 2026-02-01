@@ -118,7 +118,10 @@ pub fn get_last_transcription(app: &AppHandle) -> Result<String> {
             Err(_) => HistoryData::default(),
         }
     };
-    Ok(data.entries.first().unwrap().text.clone())
+    match data.entries.first() {
+        Some(entry) => Ok(entry.text.clone()),
+        None => Err(anyhow::anyhow!("No transcription history available")),
+    }
 }
 
 /// Clears all transcription history entries and emits an event to notify the frontend.

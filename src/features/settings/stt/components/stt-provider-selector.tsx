@@ -32,7 +32,10 @@ export const STTProviderSelector = ({
             onValueChange={(val) => onChange(val as STTProvider)}
             disabled={disabled}
         >
-            <SelectTrigger className="w-full" data-testid="stt-provider-selector">
+            <SelectTrigger
+                className="w-full"
+                data-testid="stt-provider-selector"
+            >
                 <SelectValue placeholder={t('Select provider')} />
             </SelectTrigger>
             <SelectContent>
@@ -43,7 +46,9 @@ export const STTProviderSelector = ({
                         data-testid={`stt-provider-option-${provider}`}
                     >
                         <div className="flex items-center gap-2">
-                            {provider === 'gemini' && <Sparkles className="w-4 h-4 text-purple-400" />}
+                            {provider === 'gemini' && (
+                                <Sparkles className="w-4 h-4 text-purple-400" />
+                            )}
                             {STT_PROVIDER_LABELS[provider]}
                         </div>
                     </SelectItem>

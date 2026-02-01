@@ -21,9 +21,13 @@ export const CustomDictionary = () => {
     const { t } = useTranslation();
 
     useEffect(() => {
-        invoke<string[]>('get_dictionary').then((words) => {
-            setCustomWords(words ?? []);
-        });
+        invoke<string[]>('get_dictionary')
+            .then((words) => {
+                setCustomWords(words ?? []);
+            })
+            .catch((error) => {
+                console.error('Failed to load dictionary:', error);
+            });
     }, []);
 
     const persist = (next: string[]) => {

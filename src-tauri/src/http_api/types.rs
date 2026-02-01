@@ -14,12 +14,17 @@ impl HttpApiState {
     }
 
     pub fn set_shutdown_sender(&self, tx: oneshot::Sender<()>) {
-        let mut guard = self.shutdown_tx.lock().unwrap();
-        *guard = Some(tx);
+        match self.shutdown_tx.lock() {
+            Ok(mut guard) => *guard = Some(tx),
+            Err(poisoned) => *poisoned.into_inner() = Some(tx),
+        }
     }
 
     pub fn stop(&self) {
-        let mut guard = self.shutdown_tx.lock().unwrap();
+        let mut guard = match self.shutdown_tx.lock() {
+            Ok(g) => g,
+            Err(poisoned) => poisoned.into_inner(),
+        };
         if let Some(tx) = guard.take() {
             let _ = tx.send(());
         }

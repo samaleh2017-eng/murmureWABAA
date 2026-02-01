@@ -35,7 +35,10 @@ export const ProviderSelector = ({
             onValueChange={(val) => onChange(val as LLMProvider)}
             disabled={disabled}
         >
-            <SelectTrigger className="w-[200px]" data-testid="provider-selector">
+            <SelectTrigger
+                className="w-[200px]"
+                data-testid="provider-selector"
+            >
                 <SelectValue placeholder={t('Select provider')} />
             </SelectTrigger>
             <SelectContent>

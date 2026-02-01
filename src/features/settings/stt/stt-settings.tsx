@@ -2,7 +2,11 @@ import { Page } from '@/components/page';
 import { Typography } from '@/components/typography';
 import { SettingsUI } from '@/components/settings-ui';
 import { useTranslation } from '@/i18n';
-import { useSTTSettings, STTProvider, ONLINE_PROVIDERS } from './hooks/use-stt-settings';
+import {
+    useSTTSettings,
+    STTProvider,
+    ONLINE_PROVIDERS,
+} from './hooks/use-stt-settings';
 import { STTModeSelector } from './components/stt-mode-selector';
 import { STTProviderSelector } from './components/stt-provider-selector';
 import { STTProviderConfigForm } from './components/stt-provider-config-form';
@@ -27,7 +31,10 @@ export const STTSettings = () => {
         const updates: Parameters<typeof updateSettings>[0] = { mode };
         if (mode === 'offline') {
             updates.active_provider = 'parakeet';
-        } else if (mode === 'online' && settings.active_provider === 'parakeet') {
+        } else if (
+            mode === 'online' &&
+            settings.active_provider === 'parakeet'
+        ) {
             updates.active_provider = 'openai';
         }
         await updateSettings(updates);
@@ -37,7 +44,9 @@ export const STTSettings = () => {
         await updateSettings({ active_provider: provider });
     };
 
-    const activeOnlineProvider = ONLINE_PROVIDERS.includes(settings.active_provider as Exclude<STTProvider, 'parakeet'>)
+    const activeOnlineProvider = ONLINE_PROVIDERS.includes(
+        settings.active_provider as Exclude<STTProvider, 'parakeet'>
+    )
         ? (settings.active_provider as Exclude<STTProvider, 'parakeet'>)
         : 'openai';
 
@@ -65,7 +74,9 @@ export const STTSettings = () => {
                             {t('Transcription Mode')}
                         </Typography.Title>
                         <Typography.Paragraph>
-                            {t('Choose between offline (local) and online (cloud) transcription')}
+                            {t(
+                                'Choose between offline (local) and online (cloud) transcription'
+                            )}
                         </Typography.Paragraph>
                     </SettingsUI.Description>
                 </SettingsUI.Item>
@@ -85,7 +96,9 @@ export const STTSettings = () => {
                                     {t('Provider')}
                                 </Typography.Title>
                                 <Typography.Paragraph>
-                                    {t('Select your cloud transcription provider')}
+                                    {t(
+                                        'Select your cloud transcription provider'
+                                    )}
                                 </Typography.Paragraph>
                             </SettingsUI.Description>
                             <div className="w-64">
@@ -103,17 +116,26 @@ export const STTSettings = () => {
                                     {t('Configuration')}
                                 </Typography.Title>
                                 <Typography.Paragraph>
-                                    {t('Configure your API credentials and model')}
+                                    {t(
+                                        'Configure your API credentials and model'
+                                    )}
                                 </Typography.Paragraph>
                             </SettingsUI.Description>
                             <div className="w-full">
                                 <STTProviderConfigForm
                                     provider={activeOnlineProvider}
-                                    config={getProviderConfig(activeOnlineProvider)}
+                                    config={getProviderConfig(
+                                        activeOnlineProvider
+                                    )}
                                     connectionStatus={connectionStatus}
                                     isLoading={isLoading}
                                     availableModels={availableModels}
-                                    onSaveConfig={(config) => saveProviderConfig(activeOnlineProvider, config)}
+                                    onSaveConfig={(config) =>
+                                        saveProviderConfig(
+                                            activeOnlineProvider,
+                                            config
+                                        )
+                                    }
                                     onTestConnection={testConnection}
                                     onFetchModels={fetchModels}
                                 />
@@ -136,7 +158,9 @@ export const STTSettings = () => {
                     <div className="w-64">
                         <STTLanguageSelector
                             value={settings.language}
-                            onChange={(language) => updateSettings({ language })}
+                            onChange={(language) =>
+                                updateSettings({ language })
+                            }
                         />
                     </div>
                 </SettingsUI.Item>

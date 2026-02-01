@@ -132,7 +132,6 @@ Notes:
 - `http_api/` : Local HTTP API: server lifecycle, routes, and shared state
 - `engine/` : CPU transcription engine and Parakeet runtime bindings (adapted from open source)
 
-
 ## Community Release
 
 I currently manage the official releases of Murmure for Windows and Linux (X11 Debian AppImage builds).

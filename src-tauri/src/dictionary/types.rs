@@ -10,10 +10,16 @@ impl Dictionary {
         Self(Arc::new(Mutex::new(dictionary)))
     }
     pub fn get(&self) -> HashMap<String, Vec<String>> {
-        self.0.lock().unwrap().clone()
+        match self.0.lock() {
+            Ok(guard) => guard.clone(),
+            Err(poisoned) => poisoned.into_inner().clone(),
+        }
     }
     pub fn set(&self, dictionary: HashMap<String, Vec<String>>) {
-        *self.0.lock().unwrap() = dictionary;
+        match self.0.lock() {
+            Ok(mut guard) => *guard = dictionary,
+            Err(poisoned) => *poisoned.into_inner() = dictionary,
+        }
     }
 }
 

@@ -26,11 +26,9 @@ export const useLanguageState = () => {
                         (navigator.languages && navigator.languages[0]))) ||
                 '';
             const detected = browserLang ? normalize(browserLang) : '';
-            console.log('detected', detected);
             let target = 'en';
             if (SUPPORTED_LANGUAGES.some((lang) => lang.code === detected)) {
                 target = detected;
-                console.log('target', target);
             }
             if (target !== i18n.language) {
                 i18n.changeLanguage(target);

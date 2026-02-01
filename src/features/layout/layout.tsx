@@ -24,7 +24,12 @@ export const Layout = () => {
             hasRedirected.current = true;
             navigate({ to: '/setup' });
         }
-    }, [isModelAvailable, progress.is_downloading, progress.is_complete, navigate]);
+    }, [
+        isModelAvailable,
+        progress.is_downloading,
+        progress.is_complete,
+        navigate,
+    ]);
 
     const getModelStatus = (): 'downloading' | 'ready' | 'not-installed' => {
         if (progress.is_downloading) {

@@ -16,7 +16,13 @@ pub fn fix_transcription_with_dictionary(
         return transcription;
     }
 
-    let config_files = ConfigFiles::new(&cc_rules_path).unwrap();
+    let config_files = match ConfigFiles::new(&cc_rules_path) {
+        Ok(files) => files,
+        Err(e) => {
+            log::error!("Failed to load phonetic config files: {:?}", e);
+            return transcription;
+        }
+    };
     let builder = BeiderMorseBuilder::new(&config_files);
     let beider_morse = builder.build();
 

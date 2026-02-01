@@ -65,7 +65,10 @@ export const useModelDownload = (): UseModelDownloadReturn => {
                         await invoke<boolean>('is_model_available');
                     globalIsModelAvailable = available;
                     if (available) {
-                        globalProgress = { ...globalProgress, is_complete: true };
+                        globalProgress = {
+                            ...globalProgress,
+                            is_complete: true,
+                        };
                     }
                     notifyListeners();
                 } catch (error) {

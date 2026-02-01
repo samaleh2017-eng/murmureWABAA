@@ -239,7 +239,9 @@ export const LLMConnect = () => {
                             onResetOnboarding={handleResetOnboarding}
                             onProviderChange={handleProviderChange}
                             onSaveProviderConfig={handleSaveProviderConfig}
-                            onTestProviderConnection={handleTestProviderConnection}
+                            onTestProviderConnection={
+                                handleTestProviderConnection
+                            }
                             onFetchProviderModels={handleFetchProviderModels}
                         />
                     </>
