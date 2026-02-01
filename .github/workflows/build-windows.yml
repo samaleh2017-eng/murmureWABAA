@@ -76,15 +76,28 @@ jobs:
                       Copy-Item $exe.FullName -Destination (Join-Path $releaseDir "Murmure_x64-setup.exe") -Force
                   }
 
+            - name: Restore Tauri signing key
+              if: ${{ inputs.dry == false }}
+              env:
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+              shell: pwsh
+              run: |
+                  if ($env:TAURI_PRIVATE_KEY) {
+                      [System.IO.File]::WriteAllText("tauri.key", $env:TAURI_PRIVATE_KEY)
+                      Write-Host "Tauri signing key restored."
+                  } else {
+                      Write-Host "No TAURI_PRIVATE_KEY provided."
+                  }
+
             - name: Sign with Tauri (for updater)
               if: ${{ inputs.dry == false }}
               env:
-                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+                  TAURI_PRIVATE_KEY_PATH: tauri.key
+                  TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               shell: pwsh
               run: |
-                  if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
-                      Write-Host "No TAURI_PRIVATE_KEY provided, skipping signing."
+                  if (-not (Test-Path "tauri.key")) {
+                      Write-Host "No signing key, skipping."
                       exit 0
                   }
 
