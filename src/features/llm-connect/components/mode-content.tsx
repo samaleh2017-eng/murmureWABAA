@@ -17,14 +17,17 @@ import { RenderKeys } from '@/components/render-keys';
 import {
     LLMConnectSettings,
     LLMMode,
-    OllamaModel,
 } from '../hooks/use-llm-connect';
+
+interface ModelItem {
+    name: string;
+}
 
 interface ModeContentProps {
     activeMode: LLMMode;
     activeModeIndex: number;
     modes: LLMMode[];
-    models: OllamaModel[];
+    models: ModelItem[];
     isLoading: boolean;
     updateSettings: (updates: Partial<LLMConnectSettings>) => Promise<void>;
     onRefreshModels: () => void;

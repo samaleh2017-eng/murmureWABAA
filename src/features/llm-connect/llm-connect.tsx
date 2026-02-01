@@ -14,6 +14,7 @@ export const LLMConnect = () => {
     const {
         settings,
         models,
+        providerModels,
         connectionStatus,
         isLoading,
         isSettingsLoaded,
@@ -21,12 +22,20 @@ export const LLMConnect = () => {
         testConnection,
         fetchModels,
         pullModel,
+        testProviderConnection,
+        fetchProviderModels,
+        setActiveProvider,
+        saveProviderConfig,
+        getProviderConfig,
+        getCurrentModels,
     } = useLLMConnect();
 
     const [showModelSelector, setShowModelSelector] = useState(false);
 
     const activeModeIndex = settings.active_mode_index;
     const activeMode = settings.modes[activeModeIndex];
+    const activeProvider = settings.active_provider || 'ollama';
+    const providerConfig = getProviderConfig(activeProvider);
 
     const handleTestConnection = async () => {
         const result = await testConnection();
@@ -35,6 +44,53 @@ export const LLMConnect = () => {
             await fetchModels();
         } else {
             toast.error(t('Connection failed'));
+        }
+    };
+
+    const handleProviderChange = async (provider: typeof activeProvider) => {
+        try {
+            await setActiveProvider(provider);
+            toast.success(t('Provider changed'), { autoClose: 1500 });
+        } catch {
+            toast.error(t('Failed to change provider'));
+        }
+    };
+
+    const handleSaveProviderConfig = async (
+        provider: typeof activeProvider,
+        config: Parameters<typeof saveProviderConfig>[1]
+    ) => {
+        try {
+            await saveProviderConfig(provider, config);
+        } catch {
+            toast.error(t('Failed to save configuration'));
+        }
+    };
+
+    const handleTestProviderConnection = async (
+        provider: typeof activeProvider,
+        config: Parameters<typeof testProviderConnection>[1]
+    ) => {
+        const result = await testProviderConnection(provider, config);
+        if (result) {
+            toast.success(t('Connection successful'), { autoClose: 1500 });
+        } else {
+            toast.error(t('Connection failed'));
+        }
+        return result;
+    };
+
+    const handleFetchProviderModels = async (
+        provider: typeof activeProvider,
+        config: Parameters<typeof fetchProviderModels>[1]
+    ) => {
+        try {
+            const fetchedModels = await fetchProviderModels(provider, config);
+            toast.success(t('Models loaded'), { autoClose: 1500 });
+            return fetchedModels;
+        } catch {
+            toast.error(t('Failed to fetch models'));
+            return [];
         }
     };
 
@@ -105,7 +161,6 @@ export const LLMConnect = () => {
         );
     }
 
-    // Install another model flow (preserves existing configuration)
     if (showModelSelector) {
         return (
             <main>
@@ -126,7 +181,6 @@ export const LLMConnect = () => {
         );
     }
 
-    // First-time setup onboarding flow
     if (!settings.onboarding_completed) {
         return (
             <main>
@@ -146,6 +200,8 @@ export const LLMConnect = () => {
         );
     }
 
+    const currentModels = getCurrentModels();
+
     return (
         <main>
             <div className="space-y-6">
@@ -154,7 +210,7 @@ export const LLMConnect = () => {
                 <ModeTabs
                     modes={settings.modes}
                     activeModeIndex={activeModeIndex}
-                    models={models}
+                    models={currentModels}
                     updateSettings={updateSettings}
                 />
 
@@ -164,7 +220,7 @@ export const LLMConnect = () => {
                             activeMode={activeMode}
                             activeModeIndex={activeModeIndex}
                             modes={settings.modes}
-                            models={models}
+                            models={currentModels}
                             isLoading={isLoading}
                             updateSettings={updateSettings}
                             onRefreshModels={handleTestConnection}
@@ -172,10 +228,19 @@ export const LLMConnect = () => {
 
                         <LLMAdvancedSettings
                             url={settings.url}
+                            activeProvider={activeProvider}
+                            providerConfig={providerConfig}
+                            connectionStatus={connectionStatus}
+                            isLoading={isLoading}
+                            providerModels={providerModels}
                             onUrlChange={(url) => updateSettings({ url })}
                             onTestConnection={handleTestConnection}
                             onInstallModel={() => setShowModelSelector(true)}
                             onResetOnboarding={handleResetOnboarding}
+                            onProviderChange={handleProviderChange}
+                            onSaveProviderConfig={handleSaveProviderConfig}
+                            onTestProviderConnection={handleTestProviderConnection}
+                            onFetchProviderModels={handleFetchProviderModels}
                         />
                     </>
                 )}

@@ -12,14 +12,6 @@ on:
                 required: false
             TAURI_KEY_PASSWORD:
                 required: false
-            SIGNPATH_API_TOKEN:
-                required: false
-            SIGNPATH_ORG_ID:
-                required: false
-            SIGNPATH_PROJECT_SLUG:
-                required: false
-            SIGNPATH_POLICY_SLUG:
-                required: false
 
 permissions:
     contents: read
@@ -60,75 +52,67 @@ jobs:
               run: pnpm install
               shell: pwsh
 
-            - name: Build (MSI)
+            - name: Build (MSI & NSIS)
               run: pnpm tauri build
               shell: pwsh
 
-            - name: Prepare unsigned artifacts
+            - name: Prepare artifacts
               if: ${{ inputs.dry == false }}
-              shell: pwsh
-              run: |
-                  New-Item -ItemType Directory -Force -Path "unsigned_artifacts" | Out-Null
-                  $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter *.msi | Select-Object -First 1
-                  Copy-Item $msi.FullName -Destination "unsigned_artifacts/Murmure_x64.msi"
-                  $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter *.exe | Select-Object -First 1
-                  Copy-Item $exe.FullName -Destination "unsigned_artifacts/Murmure_x64-setup.exe"
-
-            - name: Upload unsigned artifact
-              if: ${{ inputs.dry == false }}
-              id: upload-unsigned-artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: unsigned-binaries
-                  path: unsigned_artifacts
-                  retention-days: 1
-                  if-no-files-found: error
-
-            - name: SignPath Sign
-              if: ${{ inputs.dry == false }}
-              uses: signpath/github-action-submit-signing-request@v2
-              with:
-                  api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-                  organization-id: '${{ secrets.SIGNPATH_ORG_ID }}'
-                  project-slug: '${{ secrets.SIGNPATH_PROJECT_SLUG }}'
-                  signing-policy-slug: '${{ secrets.SIGNPATH_POLICY_SLUG }}'
-                  github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
-                  wait-for-completion: true
-                  output-artifact-directory: 'signed_artifacts'
-
-            - name: Restore Tauri signing key
-              if: ${{ inputs.dry == false }}
-              env:
-                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-              run: |
-                  [System.IO.File]::WriteAllBytes("tauri.key", [Convert]::FromBase64String($env:TAURI_PRIVATE_KEY))
-              shell: pwsh
-
-            - name: Sign & Package
-              if: ${{ inputs.dry == false }}
-              env:
-                  TAURI_PRIVATE_KEY_PATH: tauri.key
-                  TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               shell: pwsh
               run: |
                   $releaseDir = "release-bundle"
                   if (Test-Path $releaseDir) { Remove-Item $releaseDir -Recurse -Force }
                   New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
 
-                  # MSI
-                  $msi = Get-ChildItem -Path "signed_artifacts" -Filter *.msi | Select-Object -First 1
+                  # Copy MSI
+                  $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter *.msi | Select-Object -First 1
                   if ($msi) {
-                      $finalMsi = Join-Path $releaseDir "Murmure_x64.msi"
-                      Copy-Item $msi.FullName -Destination $finalMsi -Force
-                      pnpm tauri signer sign $finalMsi
+                      Copy-Item $msi.FullName -Destination (Join-Path $releaseDir "Murmure_x64.msi") -Force
                   }
 
-                  # EXE
-                  $exe = Get-ChildItem -Path "signed_artifacts" -Filter *.exe | Select-Object -First 1
+                  # Copy EXE (NSIS installer)
+                  $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter *.exe | Select-Object -First 1
                   if ($exe) {
-                      $finalExe = Join-Path $releaseDir "Murmure_x64-setup.exe"
-                      Copy-Item $exe.FullName -Destination $finalExe -Force
-                      pnpm tauri signer sign $finalExe
+                      Copy-Item $exe.FullName -Destination (Join-Path $releaseDir "Murmure_x64-setup.exe") -Force
+                  }
+
+            - name: Restore Tauri signing key
+              if: ${{ inputs.dry == false }}
+              env:
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+              shell: pwsh
+              run: |
+                  if ($env:TAURI_PRIVATE_KEY) {
+                      [System.IO.File]::WriteAllText("tauri.key", $env:TAURI_PRIVATE_KEY)
+                      Write-Host "Tauri signing key restored."
+                  } else {
+                      Write-Host "No TAURI_PRIVATE_KEY provided."
+                  }
+
+            - name: Sign with Tauri (for updater)
+              if: ${{ inputs.dry == false }}
+              env:
+                  TAURI_PRIVATE_KEY_PATH: tauri.key
+                  TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+              shell: pwsh
+              run: |
+                  if (-not (Test-Path "tauri.key")) {
+                      Write-Host "No signing key, skipping."
+                      exit 0
+                  }
+
+                  $releaseDir = "release-bundle"
+
+                  # Sign MSI
+                  $msi = Join-Path $releaseDir "Murmure_x64.msi"
+                  if (Test-Path $msi) {
+                      pnpm tauri signer sign $msi
+                  }
+
+                  # Sign EXE
+                  $exe = Join-Path $releaseDir "Murmure_x64-setup.exe"
+                  if (Test-Path $exe) {
+                      pnpm tauri signer sign $exe
                   }
 
             - name: Upload artifact (1 day)

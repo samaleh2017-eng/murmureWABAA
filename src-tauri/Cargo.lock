@@ -2907,6 +2907,7 @@ name = "murmure"
 version = "1.7.0"
 dependencies = [
  "anyhow",
+ "async-trait",
  "axum",
  "chrono",
  "cpal 0.17.1",

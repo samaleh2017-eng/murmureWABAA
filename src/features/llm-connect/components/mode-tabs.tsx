@@ -20,8 +20,11 @@ import {
 import {
     LLMConnectSettings,
     LLMMode,
-    OllamaModel,
 } from '../hooks/use-llm-connect';
+
+interface ModelItem {
+    name: string;
+}
 import {
     getPresetLabel,
     getPresetTypes,
@@ -33,7 +36,7 @@ import { Page } from '@/components/page';
 interface ModeTabsProps {
     modes: LLMMode[];
     activeModeIndex: number;
-    models: OllamaModel[];
+    models: ModelItem[];
     updateSettings: (updates: Partial<LLMConnectSettings>) => Promise<void>;
 }
 

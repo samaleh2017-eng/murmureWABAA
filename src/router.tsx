@@ -3,6 +3,7 @@ import {
     createRoute,
     createRootRoute,
     Navigate,
+    Outlet,
 } from '@tanstack/react-router';
 import { Home } from './features/home/home';
 import { Layout } from './features/layout/layout';
@@ -12,75 +13,98 @@ import { CustomDictionary } from './features/settings/custom-dictionary/custom-d
 import { FormattingRules } from './features/settings/formatting-rules/formatting-rules';
 import { System } from './features/settings/system/system';
 import { LLMConnect } from './features/llm-connect/llm-connect';
+import { ModelSetupLayout } from './features/model-setup/model-setup-layout';
+import { ModelSetup } from './features/model-setup/model-setup';
 
 const rootRoute = createRootRoute({
-    component: () => <Layout />,
+    component: () => <Outlet />,
+});
+
+const layoutRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    id: 'layout',
+    component: Layout,
+});
+
+const setupLayoutRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    id: 'setup-layout',
+    component: ModelSetupLayout,
 });
 
 const indexRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/',
     component: Home,
 });
 
 const settingsShortcutsRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/settings/shortcuts',
     component: Shortcuts,
 });
 
 const personalizeCustomDictionaryRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/personalize/custom-dictionary',
     component: CustomDictionary,
 });
 
 const personalizeFormattingRulesRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/personalize/formatting-rules',
     component: FormattingRules,
 });
 
 const personalizeLLMConnectRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/personalize/llm-connect',
     component: LLMConnect,
 });
 
 const settingsSystemRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/settings/system',
     component: System,
 });
 
 const settingsIndexRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/settings',
     component: () => <Navigate to="/settings/shortcuts" />,
 });
 
 const personalizeIndexRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/personalize',
     component: () => <Navigate to="/personalize/custom-dictionary" />,
 });
 
 const aboutRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => layoutRoute,
     path: '/about',
     component: About,
 });
 
+const setupRoute = createRoute({
+    getParentRoute: () => setupLayoutRoute,
+    path: '/setup',
+    component: ModelSetup,
+});
+
 const routeTree = rootRoute.addChildren([
-    indexRoute,
-    settingsIndexRoute,
-    settingsShortcutsRoute,
-    settingsSystemRoute,
-    personalizeIndexRoute,
-    personalizeCustomDictionaryRoute,
-    personalizeFormattingRulesRoute,
-    personalizeLLMConnectRoute,
-    aboutRoute,
+    layoutRoute.addChildren([
+        indexRoute,
+        settingsIndexRoute,
+        settingsShortcutsRoute,
+        settingsSystemRoute,
+        personalizeIndexRoute,
+        personalizeCustomDictionaryRoute,
+        personalizeFormattingRulesRoute,
+        personalizeLLMConnectRoute,
+        aboutRoute,
+    ]),
+    setupLayoutRoute.addChildren([setupRoute]),
 ]);
 
 export const router = createRouter({ routeTree });

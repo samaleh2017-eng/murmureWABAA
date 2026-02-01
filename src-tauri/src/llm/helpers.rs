@@ -25,18 +25,19 @@ pub fn load_llm_connect_settings(app: &AppHandle) -> LLMConnectSettings {
         }
     };
 
-    // Migration / Initialization Logic
+    settings.ensure_provider_configs();
+
     if settings.modes.is_empty() {
         let mode = crate::llm::types::LLMMode {
             name: "Général".to_string(),
             prompt: settings.prompt.clone(),
             model: settings.model.clone(),
             shortcut: "Ctrl+Shift+1".to_string(),
+            provider: None,
         };
         settings.modes.push(mode);
         settings.active_mode_index = 0;
 
-        // Clear legacy prompt to mark as migrated (optional, but cleaner)
         settings.prompt = String::new();
 
         let _ = save_llm_connect_settings(app, &settings);
