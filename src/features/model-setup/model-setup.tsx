@@ -3,9 +3,11 @@ import { useNavigate } from '@tanstack/react-router';
 import { SetupModeSelection } from './components/setup-mode-selection';
 import { SetupModelInfo } from './components/setup-model-info';
 import { SetupComplete } from './components/setup-complete';
+import { SetupOnlineProvider } from './components/setup-online-provider';
 import { useModelDownload } from './hooks/use-model-download';
+import { STTMode } from '@/features/settings/stt/hooks/use-stt-settings';
 
-type SetupStep = 'mode' | 'model' | 'complete';
+type SetupStep = 'mode' | 'model' | 'online-provider' | 'complete';
 
 export const ModelSetup = () => {
     const [step, setStep] = useState<SetupStep>('mode');
@@ -24,8 +26,20 @@ export const ModelSetup = () => {
         }
     }, [progress.is_complete, step]);
 
-    const handleModeSelection = () => {
-        setStep('model');
+    const handleModeSelection = (mode: STTMode) => {
+        if (mode === 'offline') {
+            setStep('model');
+        } else {
+            setStep('online-provider');
+        }
+    };
+
+    const handleOnlineProviderComplete = () => {
+        navigate({ to: '/' });
+    };
+
+    const handleOnlineProviderBack = () => {
+        setStep('mode');
     };
 
     const handleDownload = async () => {
@@ -51,13 +65,20 @@ export const ModelSetup = () => {
 
     switch (step) {
         case 'mode':
-            return <SetupModeSelection onContinue={handleModeSelection} />;
+            return <SetupModeSelection onModeSelect={handleModeSelection} />;
         case 'model':
             return (
                 <SetupModelInfo
                     onDownload={handleDownload}
                     onRetry={handleRetry}
                     progress={progress}
+                />
+            );
+        case 'online-provider':
+            return (
+                <SetupOnlineProvider
+                    onComplete={handleOnlineProviderComplete}
+                    onBack={handleOnlineProviderBack}
                 />
             );
         case 'complete':
