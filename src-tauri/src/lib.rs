@@ -25,7 +25,7 @@ use dictionary::Dictionary;
 use http_api::HttpApiState;
 use llm::llm::pull_ollama_model;
 use log::{error, info, warn};
-use model::Model;
+use model::{download::DownloadState, Model};
 use overlay::tray::setup_tray;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -91,6 +91,7 @@ pub fn run() {
             let model =
                 Arc::new(Model::new(app.handle().clone()).expect("Failed to initialize model"));
             app.manage(model);
+            app.manage(Arc::new(DownloadState::default()));
             app.manage(AudioState::new());
 
             let mut s = settings::load_settings(app.handle());
@@ -219,7 +220,10 @@ pub fn run() {
             get_formatting_settings,
             set_formatting_settings,
             get_log_level,
-            set_log_level
+            set_log_level,
+            start_model_download,
+            cancel_model_download,
+            get_download_progress
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

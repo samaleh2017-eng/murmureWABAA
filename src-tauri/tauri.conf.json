@@ -37,7 +37,7 @@
             "icons/icon.icns",
             "icons/icon.ico"
         ],
-        "resources": ["../resources/**/*"],
+        "resources": ["../resources/cc-rules/**/*", "../resources/audio/**/*"],
         "macOS": {
             "entitlements": "./Entitlements.plist"
         },
@@ -45,7 +45,8 @@
             "appimage": {
                 "files": {
                     "/usr/share/README.md": "../README.md",
-                    "/usr/resources": "../resources/"
+                    "/usr/resources/cc-rules": "../resources/cc-rules/",
+                    "/usr/resources/audio": "../resources/audio/"
                 }
             }
         },
