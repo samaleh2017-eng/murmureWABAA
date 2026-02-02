@@ -1,3 +1,4 @@
+use super::browser_state;
 use super::types::ActiveContext;
 
 const BROWSER_NAMES: &[&str] = &[
@@ -18,18 +19,36 @@ const BROWSER_NAMES: &[&str] = &[
 
 pub fn get_active_context() -> ActiveContext {
     #[cfg(target_os = "windows")]
-    let context = super::platform_windows::get_active_context_impl();
+    let mut context = super::platform_windows::get_active_context_impl();
 
     #[cfg(target_os = "macos")]
-    let context = super::platform_macos::get_active_context_impl();
+    let mut context = super::platform_macos::get_active_context_impl();
 
     #[cfg(target_os = "linux")]
-    let context = super::platform_linux::get_active_context_impl();
+    let mut context = super::platform_linux::get_active_context_impl();
 
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
-    let context = ActiveContext::default();
+    let mut context = ActiveContext::default();
+
+    if let Some(browser_ctx) = browser_state::get_browser_context() {
+        if is_browser(&context.app_name, &context.process_name) {
+            context.detected_url = Some(extract_domain(&browser_ctx.url));
+            context.window_title = browser_ctx.title;
+        }
+    }
 
     context
+}
+
+fn extract_domain(url: &str) -> String {
+    url.split("://")
+        .nth(1)
+        .unwrap_or(url)
+        .split('/')
+        .next()
+        .unwrap_or(url)
+        .trim_start_matches("www.")
+        .to_string()
 }
 
 pub fn is_browser(app_name: &str, process_name: &str) -> bool {

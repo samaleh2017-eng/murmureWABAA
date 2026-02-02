@@ -1,0 +1,90 @@
+# Murmure Browser Extension
+
+Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif) à Murmure pour améliorer la détection de contexte lors de la transcription.
+
+## Prérequis
+
+- Murmure doit être lancé avec l'API HTTP activée (Settings → System → API)
+- Port par défaut: `9876`
+
+## Installation en mode développeur
+
+### Chrome / Chromium / Edge / Brave
+
+1. Ouvrir `chrome://extensions/` (ou l'équivalent pour votre navigateur)
+2. Activer le **Mode développeur** (toggle en haut à droite)
+3. Cliquer sur **Charger l'extension non empaquetée**
+4. Sélectionner le dossier `browser-extension/chrome/`
+5. L'extension apparaît dans la barre d'outils
+
+### Firefox
+
+1. Ouvrir `about:debugging#/runtime/this-firefox`
+2. Cliquer sur **Charger un module temporaire**
+3. Sélectionner le fichier `browser-extension/firefox/manifest.json`
+4. L'extension est active jusqu'au redémarrage de Firefox
+
+Pour une installation permanente sur Firefox:
+1. Aller sur `about:config`
+2. Définir `xpinstall.signatures.required` à `false`
+3. Packager l'extension en `.xpi` avec `web-ext build`
+
+## Configuration du port
+
+Si vous utilisez un port différent de `9876`:
+
+1. Modifier `MURMURE_API_URL` dans `background.js`:
+   ```javascript
+   const MURMURE_API_URL = 'http://127.0.0.1:VOTRE_PORT/api/context';
+   ```
+2. Recharger l'extension
+
+## Utilisation
+
+- L'extension envoie automatiquement le contexte à chaque changement d'onglet ou de page
+- Cliquez sur l'icône de l'extension pour voir le statut de connexion
+- Utilisez le toggle pour activer/désactiver temporairement l'envoi de contexte
+
+## Publication
+
+### Chrome Web Store
+
+1. Créer un fichier ZIP du dossier `chrome/`:
+   ```bash
+   cd browser-extension
+   zip -r murmure-context-chrome.zip chrome/
+   ```
+2. Aller sur [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole/)
+3. Créer un nouveau projet et uploader le ZIP
+4. Remplir les informations et soumettre pour review
+
+### Firefox Add-ons
+
+1. Installer `web-ext`:
+   ```bash
+   npm install -g web-ext
+   ```
+2. Builder l'extension:
+   ```bash
+   cd browser-extension/firefox
+   web-ext build
+   ```
+3. Aller sur [Firefox Add-on Developer Hub](https://addons.mozilla.org/developers/)
+4. Soumettre le fichier `.zip` généré
+
+## Sécurité
+
+- L'extension ne communique qu'avec `localhost` / `127.0.0.1`
+- Aucune donnée n'est envoyée à des serveurs externes
+- Les URLs système (`chrome://`, `about:`, etc.) sont ignorées
+
+## Dépannage
+
+**"Murmure non détecté"**
+- Vérifier que Murmure est lancé
+- Vérifier que l'API HTTP est activée dans les paramètres
+- Vérifier que le port correspond (4800 par défaut)
+
+**L'extension ne détecte pas les changements**
+- Recharger l'extension
+- Vérifier les permissions dans le navigateur

@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "Murmure Context",
+  "version": "1.0.0",
+  "description": "Envoie le contexte de navigation à Murmure pour une détection intelligente du mode de transcription.",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "murmure-context@murmure.al1x-ai.com"
+    }
+  }
+}

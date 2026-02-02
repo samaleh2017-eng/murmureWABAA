@@ -1,9 +1,11 @@
 use crate::audio;
+use crate::context_detection::browser_state::set_browser_context;
+use crate::context_detection::BrowserContext;
 use crate::dictionary::{fix_transcription_with_dictionary, get_cc_rules_path, Dictionary};
 use anyhow::Result;
 use axum::{
     extract::{DefaultBodyLimit, Multipart},
-    http::StatusCode,
+    http::{Method, StatusCode},
     response::IntoResponse,
     routing::post,
     Json, Router,
@@ -12,7 +14,9 @@ use log::info;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::sync::Arc;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
+use tower_http::cors::{Any, CorsLayer};
 
 #[derive(Serialize, Deserialize)]
 pub struct TranscriptionResponse {
@@ -24,6 +28,18 @@ pub struct ErrorResponse {
     pub error: String,
 }
 
+#[derive(Deserialize)]
+pub struct ContextRequest {
+    pub url: String,
+    pub title: String,
+    pub browser: String,
+}
+
+#[derive(Serialize)]
+pub struct ContextResponse {
+    pub status: String,
+}
+
 pub async fn start_http_api(
     app: tauri::AppHandle,
     port: u16,
@@ -31,9 +47,16 @@ pub async fn start_http_api(
 ) -> Result<()> {
     let app = Arc::new(app);
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::POST, Method::OPTIONS])
+        .allow_headers(Any);
+
     let router = Router::new()
         .route("/api/transcribe", post(transcribe_handler))
+        .route("/api/context", post(context_handler))
         .with_state(app.clone())
+        .layer(cors)
         .layer(DefaultBodyLimit::max(100_000_000));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
@@ -148,4 +171,27 @@ async fn transcribe_handler(
         }),
     )
         .into_response()
+}
+
+async fn context_handler(Json(payload): Json<ContextRequest>) -> impl IntoResponse {
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64;
+
+    let context = BrowserContext {
+        url: payload.url,
+        title: payload.title,
+        browser: payload.browser,
+        timestamp,
+    };
+
+    set_browser_context(context);
+
+    (
+        StatusCode::OK,
+        Json(ContextResponse {
+            status: "ok".to_string(),
+        }),
+    )
 }
