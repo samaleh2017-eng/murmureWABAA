@@ -1,5 +1,6 @@
 pub mod browser_state;
 pub mod context_detection;
+pub mod integration;
 pub mod mapping;
 pub mod types;
 
@@ -13,5 +14,6 @@ mod platform_windows;
 mod platform_macos;
 
 pub use context_detection::get_active_context;
+pub use integration::{auto_switch_mode_if_enabled, resolve_mode_index};
 pub use mapping::{find_matching_mode, ContextMappingSettings, ContextRule, PatternType};
 pub use types::{ActiveContext, BrowserContext};

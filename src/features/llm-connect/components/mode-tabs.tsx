@@ -65,9 +65,11 @@ export const ModeTabs = ({
 
             let baseName = t('New Mode');
             let prompt = '';
+            let key: string | undefined;
             if (preset) {
                 baseName = t(getPresetLabel(preset));
                 prompt = getPromptByPreset(preset, i18n.language);
+                key = preset;
             }
 
             let name = baseName;
@@ -84,6 +86,7 @@ export const ModeTabs = ({
                     activeMode?.model ||
                     (models.length > 0 ? models[0].name : ''),
                 shortcut: `Ctrl + Shift + ${modes.length + 1}`,
+                key,
             };
 
             const newModes = [...modes, newMode];
