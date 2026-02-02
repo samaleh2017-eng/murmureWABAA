@@ -3,6 +3,7 @@ use super::types::ActiveContext;
 use log::debug;
 use std::ffi::OsString;
 use std::os::windows::ffi::OsStringExt;
+use std::ptr::null_mut;
 use windows_sys::Win32::Foundation::{CloseHandle, HANDLE, HWND};
 
 const MAX_PATH: usize = 260;
@@ -17,7 +18,7 @@ pub fn get_active_context_impl() -> ActiveContext {
     let mut context = ActiveContext::default();
 
     let hwnd: HWND = unsafe { GetForegroundWindow() };
-    if hwnd == 0 {
+    if hwnd.is_null() {
         debug!("No foreground window found");
         return context;
     }
@@ -70,7 +71,7 @@ fn get_process_info(process_id: u32) -> Option<(String, String)> {
     let handle: HANDLE =
         unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, process_id) };
 
-    if handle == 0 {
+    if handle.is_null() {
         return None;
     }
 
