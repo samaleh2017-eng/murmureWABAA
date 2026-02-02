@@ -7,6 +7,7 @@ pub enum STTProvider {
     #[default]
     Parakeet,
     OpenAI,
+    #[serde(rename = "google_cloud")]
     GoogleCloud,
     Gemini,
     Groq,
