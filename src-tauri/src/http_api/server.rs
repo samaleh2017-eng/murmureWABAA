@@ -1,4 +1,4 @@
-use crate::context_detection::browser_state::{remove_browser_context, set_browser_context};
+use crate::context_detection::browser_state::{remove_browser_context, set_browser_context_http, set_browser_context_ws};
 use crate::context_detection::BrowserContext;
 use crate::dictionary::{fix_transcription_with_dictionary, get_cc_rules_path, Dictionary};
 use anyhow::Result;
@@ -114,7 +114,7 @@ async fn handle_websocket(socket: WebSocket) {
                             timestamp,
                         };
 
-                        set_browser_context(&conn_id, context);
+                        set_browser_context_ws(&conn_id, context);
                         debug!("WebSocket context updated from {}", conn_id);
 
                         let response = serde_json::json!({"status": "ok"});
@@ -257,7 +257,7 @@ async fn context_handler(Json(payload): Json<ContextRequest>) -> impl IntoRespon
         timestamp,
     };
 
-    set_browser_context("http-fallback", context);
+    set_browser_context_http(context);
 
     (
         StatusCode::OK,
