@@ -11,7 +11,6 @@ import {
     Wrench,
     AlignLeft,
     Mic,
-    Scan,
 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
@@ -67,12 +66,6 @@ const getSettingsSubItems = (t: (key: string) => string) => [
         url: '/settings/stt',
         icon: Mic,
         dataTestId: 'stt-tab',
-    },
-    {
-        name: t('Context Detection'),
-        url: '/settings/context-detection',
-        icon: Scan,
-        dataTestId: 'context-detection-tab',
     },
     {
         name: t('System'),
