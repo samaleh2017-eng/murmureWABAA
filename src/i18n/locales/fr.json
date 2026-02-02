@@ -378,5 +378,6 @@
     "Please enter an API key": "Veuillez entrer une clé API",
     "Connection failed. Check your API key.": "Connexion échouée. Vérifiez votre clé API.",
     "Testing...": "Test en cours...",
-    "Back": "Retour"
+    "Back": "Retour",
+    "Provider": "Fournisseur"
 }
