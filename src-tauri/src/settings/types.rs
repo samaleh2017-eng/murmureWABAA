@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::context_detection::ContextMappingSettings;
+
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub enum PasteMethod {
     #[default]
@@ -51,6 +53,8 @@ pub struct AppSettings {
     pub onboarding: OnboardingState,
     pub mic_id: Option<String>, // Optional microphone device ID
     pub log_level: String,      // "info" | "debug" | "trace" | "warn" | "error"
+    #[serde(default)]
+    pub context_mapping: ContextMappingSettings,
 }
 
 impl Default for AppSettings {
@@ -78,6 +82,7 @@ impl Default for AppSettings {
             onboarding: OnboardingState::default(),
             mic_id: None,
             log_level: "info".to_string(),
+            context_mapping: ContextMappingSettings::default(),
         }
     }
 }

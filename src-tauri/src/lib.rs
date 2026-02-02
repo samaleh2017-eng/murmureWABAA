@@ -237,7 +237,9 @@ pub fn run() {
             save_stt_provider_config,
             get_stt_provider_config,
             get_available_stt_providers,
-            get_current_context
+            get_current_context,
+            get_context_mapping_settings,
+            save_context_mapping_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
