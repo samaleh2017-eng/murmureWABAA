@@ -2,16 +2,23 @@
 
 Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif) à Murmure pour améliorer la détection de contexte lors de la transcription.
 
-## Prérequis
+## ⚠️ Prérequis important
 
-- Murmure doit être lancé avec l'API HTTP activée (Settings → System → API)
-- Port par défaut: `9876`
+**L'API HTTP locale est désactivée par défaut.** Vous devez l'activer manuellement :
+
+1. Ouvrir **Murmure**
+2. Aller dans **Settings → System**
+3. Activer **API HTTP locale** (Expérimental)
+4. Le port par défaut est `4800`
+5. Redémarrer Murmure si nécessaire
+
+> Sans cette activation, l'extension affichera "Murmure non détecté".
 
 ## Installation en mode développeur
 
-### Chrome / Chromium / Edge / Brave
+### Chrome / Edge / Brave / Opera / Vivaldi
 
-1. Ouvrir `chrome://extensions/` (ou l'équivalent pour votre navigateur)
+1. Ouvrir `chrome://extensions/` (ou `edge://extensions/` pour Edge)
 2. Activer le **Mode développeur** (toggle en haut à droite)
 3. Cliquer sur **Charger l'extension non empaquetée**
 4. Sélectionner le dossier `browser-extension/chrome/`
@@ -31,7 +38,7 @@ Pour une installation permanente sur Firefox:
 
 ## Configuration du port
 
-Si vous utilisez un port différent de `9876`:
+Si vous utilisez un port différent de `4800` dans Murmure :
 
 1. Modifier `MURMURE_API_URL` dans `background.js`:
    ```javascript
@@ -44,6 +51,10 @@ Si vous utilisez un port différent de `9876`:
 - L'extension envoie automatiquement le contexte à chaque changement d'onglet ou de page
 - Cliquez sur l'icône de l'extension pour voir le statut de connexion
 - Utilisez le toggle pour activer/désactiver temporairement l'envoi de contexte
+
+## Sans l'extension
+
+Si vous n'activez pas l'API ou n'installez pas l'extension, Murmure utilise un **fallback** qui détecte les URLs à partir du titre de la fenêtre du navigateur. Cette méthode fonctionne pour les services connus (Gmail, YouTube, GitHub, etc.) mais est moins précise.
 
 ## Publication
 
@@ -76,13 +87,13 @@ Si vous utilisez un port différent de `9876`:
 
 - L'extension ne communique qu'avec `localhost` / `127.0.0.1`
 - Aucune donnée n'est envoyée à des serveurs externes
-- Les URLs système (`chrome://`, `about:`, etc.) sont ignorées
+- Les URLs système (`chrome://`, `edge://`, `about:`, etc.) sont ignorées
 
 ## Dépannage
 
 **"Murmure non détecté"**
 - Vérifier que Murmure est lancé
-- Vérifier que l'API HTTP est activée dans les paramètres
+- Vérifier que l'**API HTTP locale est activée** dans Settings → System
 - Vérifier que le port correspond (4800 par défaut)
 
 **L'extension ne détecte pas les changements**
