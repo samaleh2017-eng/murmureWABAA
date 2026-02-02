@@ -10,6 +10,43 @@ fn llm_connect_settings_path(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(dir.join("llm_connect.json"))
 }
 
+fn create_default_modes(base_prompt: &str, base_model: &str) -> Vec<crate::llm::types::LLMMode> {
+    vec![
+        crate::llm::types::LLMMode {
+            name: "Général".to_string(),
+            prompt: base_prompt.to_string(),
+            model: base_model.to_string(),
+            shortcut: "Ctrl+Shift+1".to_string(),
+            provider: None,
+            key: Some("general".to_string()),
+        },
+        crate::llm::types::LLMMode {
+            name: "Developer".to_string(),
+            prompt: base_prompt.to_string(),
+            model: base_model.to_string(),
+            shortcut: "Ctrl+Shift+2".to_string(),
+            provider: None,
+            key: Some("developer".to_string()),
+        },
+        crate::llm::types::LLMMode {
+            name: "Email".to_string(),
+            prompt: base_prompt.to_string(),
+            model: base_model.to_string(),
+            shortcut: "Ctrl+Shift+3".to_string(),
+            provider: None,
+            key: Some("email".to_string()),
+        },
+        crate::llm::types::LLMMode {
+            name: "Chat".to_string(),
+            prompt: base_prompt.to_string(),
+            model: base_model.to_string(),
+            shortcut: "Ctrl+Shift+4".to_string(),
+            provider: None,
+            key: Some("chat".to_string()),
+        },
+    ]
+}
+
 pub fn load_llm_connect_settings(app: &AppHandle) -> LLMConnectSettings {
     let path = match llm_connect_settings_path(app) {
         Ok(p) => p,
@@ -28,19 +65,9 @@ pub fn load_llm_connect_settings(app: &AppHandle) -> LLMConnectSettings {
     settings.ensure_provider_configs();
 
     if settings.modes.is_empty() {
-        let mode = crate::llm::types::LLMMode {
-            name: "Général".to_string(),
-            prompt: settings.prompt.clone(),
-            model: settings.model.clone(),
-            shortcut: "Ctrl+Shift+1".to_string(),
-            provider: None,
-            key: Some("general".to_string()),
-        };
-        settings.modes.push(mode);
+        settings.modes = create_default_modes(&settings.prompt, &settings.model);
         settings.active_mode_index = 0;
-
         settings.prompt = String::new();
-
         let _ = save_llm_connect_settings(app, &settings);
     }
 
