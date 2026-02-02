@@ -84,7 +84,7 @@ export const ContextDetection = () => {
                     name: formData.name.trim(),
                     pattern: formData.pattern.trim(),
                     patternType: formData.patternType,
-                    targetModeIndex: formData.targetModeIndex,
+                    targetModeKey: formData.targetModeKey,
                     priority: formData.priority,
                 });
                 toast.success(t('Rule updated successfully'));
@@ -94,7 +94,7 @@ export const ContextDetection = () => {
                     name: formData.name.trim(),
                     pattern: formData.pattern.trim(),
                     patternType: formData.patternType,
-                    targetModeIndex: formData.targetModeIndex,
+                    targetModeKey: formData.targetModeKey,
                     priority: formData.priority,
                     enabled: true,
                 });
@@ -113,17 +113,12 @@ export const ContextDetection = () => {
             name: rule.name,
             pattern: rule.pattern,
             patternType: rule.patternType,
-            targetModeIndex: rule.targetModeIndex,
+            targetModeKey: rule.targetModeKey,
             priority: rule.priority,
         });
         setShowAddForm(true);
     };
 
-    const handleCancelEdit = () => {
-        setEditingRule(null);
-        setFormData(defaultFormData);
-        setShowAddForm(false);
-    };
 
     const handleDeleteRule = async (rule: ContextRule) => {
         try {
