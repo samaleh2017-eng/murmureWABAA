@@ -14,6 +14,8 @@ mod platform_windows;
 mod platform_macos;
 
 pub use context_detection::get_active_context;
+#[allow(unused_imports)]
 pub use integration::{auto_switch_mode_if_enabled, resolve_mode_index};
+#[allow(unused_imports)]
 pub use mapping::{find_matching_mode, ContextMappingSettings, ContextRule, PatternType};
 pub use types::{ActiveContext, BrowserContext};

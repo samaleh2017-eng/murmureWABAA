@@ -11,6 +11,7 @@ export default [
             '**/src-tauri/**',
             '**/resources/**',
             '**/e2e-tests/**',
+            '**/browser-extension/**',
             'tailwind.config.js',
         ],
     },

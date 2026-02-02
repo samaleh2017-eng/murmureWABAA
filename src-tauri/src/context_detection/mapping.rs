@@ -191,8 +191,10 @@ mod tests {
             window_title: "main.rs - project".to_string(),
             detected_url: None,
         };
-        let mut settings = ContextMappingSettings::default();
-        settings.auto_detection_enabled = false;
+        let settings = ContextMappingSettings {
+            auto_detection_enabled: false,
+            ..Default::default()
+        };
         let mode = find_matching_mode(&context, &settings);
         assert_eq!(mode, "general");
     }

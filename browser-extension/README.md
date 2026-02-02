@@ -5,7 +5,7 @@ Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif
 ## Prérequis
 
 - Murmure doit être lancé avec l'API HTTP activée (Settings → System → API)
-- Port par défaut: `9876`
+- Port par défaut: `4800`
 
 ## Installation en mode développeur
 

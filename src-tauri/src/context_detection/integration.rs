@@ -82,34 +82,35 @@ mod tests {
     use crate::llm::types::LLMMode;
 
     fn create_test_settings() -> LLMConnectSettings {
-        let mut settings = LLMConnectSettings::default();
-        settings.modes = vec![
-            LLMMode {
-                name: "General".to_string(),
-                prompt: String::new(),
-                model: "test".to_string(),
-                shortcut: String::new(),
-                provider: None,
-                key: Some("general".to_string()),
-            },
-            LLMMode {
-                name: "Developer".to_string(),
-                prompt: String::new(),
-                model: "test".to_string(),
-                shortcut: String::new(),
-                provider: None,
-                key: Some("developer".to_string()),
-            },
-            LLMMode {
-                name: "Email".to_string(),
-                prompt: String::new(),
-                model: "test".to_string(),
-                shortcut: String::new(),
-                provider: None,
-                key: Some("email".to_string()),
-            },
-        ];
-        settings
+        LLMConnectSettings {
+            modes: vec![
+                LLMMode {
+                    name: "General".to_string(),
+                    prompt: String::new(),
+                    model: "test".to_string(),
+                    shortcut: String::new(),
+                    provider: None,
+                    key: Some("general".to_string()),
+                },
+                LLMMode {
+                    name: "Developer".to_string(),
+                    prompt: String::new(),
+                    model: "test".to_string(),
+                    shortcut: String::new(),
+                    provider: None,
+                    key: Some("developer".to_string()),
+                },
+                LLMMode {
+                    name: "Email".to_string(),
+                    prompt: String::new(),
+                    model: "test".to_string(),
+                    shortcut: String::new(),
+                    provider: None,
+                    key: Some("email".to_string()),
+                },
+            ],
+            ..Default::default()
+        }
     }
 
     #[test]
@@ -129,15 +130,17 @@ mod tests {
 
     #[test]
     fn test_resolve_mode_index_by_name_fallback() {
-        let mut settings = LLMConnectSettings::default();
-        settings.modes = vec![LLMMode {
-            name: "Custom Mode".to_string(),
-            prompt: String::new(),
-            model: "test".to_string(),
-            shortcut: String::new(),
-            provider: None,
-            key: None,
-        }];
+        let settings = LLMConnectSettings {
+            modes: vec![LLMMode {
+                name: "Custom Mode".to_string(),
+                prompt: String::new(),
+                model: "test".to_string(),
+                shortcut: String::new(),
+                provider: None,
+                key: None,
+            }],
+            ..Default::default()
+        };
         assert_eq!(resolve_mode_index("custom mode", &settings), Some(0));
     }
 

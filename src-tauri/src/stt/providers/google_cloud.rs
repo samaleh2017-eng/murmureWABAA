@@ -233,19 +233,17 @@ fn parse_rsa_private_key(der: &[u8]) -> Result<(Vec<u8>, Vec<u8>), String> {
     skip_tag_length(der, &mut pos, 0x30)?;
 
     let version = read_integer(der, &mut pos)?;
-    if version.len() != 1 || (version[0] != 0 && version[0] != 1) {
-        if der[pos] == 0x30 {
-            skip_tag_length(der, &mut pos, 0x30)?;
-            skip_tag_length(der, &mut pos, 0x06)?;
-            let oid_len = read_length(der, &mut pos.clone())?;
-            pos += oid_len;
-            if pos < der.len() && der[pos] == 0x05 {
-                pos += 2;
-            }
-            skip_tag_length(der, &mut pos, 0x04)?;
-            skip_tag_length(der, &mut pos, 0x30)?;
-            let _ = read_integer(der, &mut pos)?;
+    if (version.len() != 1 || (version[0] != 0 && version[0] != 1)) && der[pos] == 0x30 {
+        skip_tag_length(der, &mut pos, 0x30)?;
+        skip_tag_length(der, &mut pos, 0x06)?;
+        let oid_len = read_length(der, &mut pos.clone())?;
+        pos += oid_len;
+        if pos < der.len() && der[pos] == 0x05 {
+            pos += 2;
         }
+        skip_tag_length(der, &mut pos, 0x04)?;
+        skip_tag_length(der, &mut pos, 0x30)?;
+        let _ = read_integer(der, &mut pos)?;
     }
 
     let n = read_integer(der, &mut pos)?;
@@ -260,10 +258,10 @@ fn mod_exp(base: &[u8], exp: &[u8], modulus: &[u8]) -> Vec<u8> {
         let mut result = Vec::new();
         let mut i = bytes.len();
         while i > 0 {
-            let start = if i >= 4 { i - 4 } else { 0 };
+            let start = i.saturating_sub(4);
             let mut val = 0u32;
-            for j in start..i {
-                val = (val << 8) | (bytes[j] as u32);
+            for byte in bytes.iter().take(i).skip(start) {
+                val = (val << 8) | (*byte as u32);
             }
             result.push(val);
             i = start;
