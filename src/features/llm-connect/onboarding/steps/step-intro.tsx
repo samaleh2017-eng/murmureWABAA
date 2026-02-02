@@ -85,9 +85,6 @@ export const StepIntro = ({ onNext }: StepIntroProps) => {
                 >
                     {t('Start Configuration')}
                 </Page.PrimaryButton>
-                <p className="mt-4 text-xs text-zinc-500">
-                    {t('Requires installing Ollama (free & open source)')}
-                </p>
             </div>
         </motion.div>
     );

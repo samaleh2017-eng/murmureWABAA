@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { StepIntro } from './steps/step-intro';
+import { StepProviderChoice, ProviderType } from './steps/step-provider-choice';
 import { StepInstall } from './steps/step-install';
+import { StepCloudConfig } from './steps/step-cloud-config';
 import { StepModel } from './steps/step-model';
 import { StepSuccess } from './steps/step-success';
-import { LLMConnectSettings, OllamaModel } from '../hooks/use-llm-connect';
+import { LLMConnectSettings, OllamaModel, LLMProvider, ProviderConfig } from '../hooks/use-llm-connect';
 import { ProgressBar } from '@/components/progress-bar';
 
 interface LLMConnectOnboardingProps {
@@ -16,9 +18,14 @@ interface LLMConnectOnboardingProps {
     initialStep?: number;
     models: OllamaModel[];
     fetchModels: () => Promise<OllamaModel[]>;
-    /** If true, only allow installing models without modifying existing configuration */
     isInstallOnly?: boolean;
+    testProviderConnection?: (provider: LLMProvider, config: ProviderConfig) => Promise<boolean>;
+    saveProviderConfig?: (provider: LLMProvider, config: ProviderConfig) => Promise<void>;
+    setActiveProvider?: (provider: LLMProvider) => Promise<void>;
+    fetchProviderModels?: (provider: LLMProvider, config: ProviderConfig) => Promise<string[]>;
 }
+
+type FlowStep = 'intro' | 'choice' | 'ollama-install' | 'ollama-model' | 'cloud-config' | 'cloud-model' | 'success';
 
 export const LLMConnectOnboarding = ({
     settings,
@@ -30,53 +37,131 @@ export const LLMConnectOnboarding = ({
     models,
     fetchModels,
     isInstallOnly = false,
+    testProviderConnection,
+    saveProviderConfig,
+    setActiveProvider,
+    fetchProviderModels,
 }: LLMConnectOnboardingProps) => {
-    const [step, setStep] = useState(initialStep);
+    const [step, setStep] = useState<FlowStep>(initialStep === 0 ? 'intro' : 'choice');
 
-    const nextStep = () => setStep((s) => s + 1);
+    const handleProviderChoice = (type: ProviderType) => {
+        if (type === 'local') {
+            setStep('ollama-install');
+        } else {
+            setStep('cloud-config');
+        }
+    };
 
     const handleComplete = async () => {
         await completeOnboarding();
     };
 
-    const steps = [
-        <StepIntro key="intro" onNext={nextStep} />,
-        <StepInstall
-            key="install"
-            onNext={nextStep}
-            testConnection={testConnection}
-        />,
-        <StepModel
-            key="model"
-            onNext={isInstallOnly ? handleComplete : nextStep}
-            pullModel={pullModel}
-            updateSettings={updateSettings}
-            settings={settings}
-            models={models}
-            fetchModels={fetchModels}
-            isInstallOnly={isInstallOnly}
-        />,
-        <StepSuccess key="success" onComplete={handleComplete} />,
-    ];
+    const getProgress = (): number => {
+        const progressMap: Record<FlowStep, number> = {
+            'intro': 0,
+            'choice': 20,
+            'ollama-install': 40,
+            'ollama-model': 70,
+            'cloud-config': 40,
+            'cloud-model': 70,
+            'success': 100,
+        };
+        return progressMap[step] || 0;
+    };
 
-    // For install-only mode, skip progress bar and show only model step
+    const renderStep = () => {
+        switch (step) {
+            case 'intro':
+                return <StepIntro key="intro" onNext={() => setStep('choice')} />;
+
+            case 'choice':
+                return <StepProviderChoice key="choice" onSelect={handleProviderChoice} />;
+
+            case 'ollama-install':
+                return (
+                    <StepInstall
+                        key="ollama-install"
+                        onNext={() => setStep('ollama-model')}
+                        testConnection={testConnection}
+                    />
+                );
+
+            case 'ollama-model':
+                return (
+                    <StepModel
+                        key="ollama-model"
+                        onNext={isInstallOnly ? handleComplete : () => setStep('success')}
+                        pullModel={pullModel}
+                        updateSettings={updateSettings}
+                        settings={settings}
+                        models={models}
+                        fetchModels={fetchModels}
+                        isInstallOnly={isInstallOnly}
+                    />
+                );
+
+            case 'cloud-config':
+                return (
+                    <StepCloudConfig
+                        key="cloud-config"
+                        onNext={() => setStep('cloud-model')}
+                        onBack={() => setStep('choice')}
+                        testProviderConnection={testProviderConnection || (async () => false)}
+                        saveProviderConfig={saveProviderConfig || (async () => {})}
+                        setActiveProvider={setActiveProvider || (async () => {})}
+                        fetchProviderModels={fetchProviderModels || (async () => [])}
+                    />
+                );
+
+            case 'cloud-model':
+                return (
+                    <StepModel
+                        key="cloud-model"
+                        onNext={isInstallOnly ? handleComplete : () => setStep('success')}
+                        pullModel={pullModel}
+                        updateSettings={updateSettings}
+                        settings={settings}
+                        models={models}
+                        fetchModels={fetchModels}
+                        isInstallOnly={isInstallOnly}
+                        isCloudProvider={true}
+                    />
+                );
+
+            case 'success':
+                return <StepSuccess key="success" onComplete={handleComplete} />;
+
+            default:
+                return null;
+        }
+    };
+
     if (isInstallOnly) {
         return (
             <div className="min-h-[600px] flex flex-col">
                 <div className="flex-1 relative">
-                    <AnimatePresence mode="wait">{steps[2]}</AnimatePresence>
+                    <AnimatePresence mode="wait">
+                        <StepModel
+                            key="model-only"
+                            onNext={handleComplete}
+                            pullModel={pullModel}
+                            updateSettings={updateSettings}
+                            settings={settings}
+                            models={models}
+                            fetchModels={fetchModels}
+                            isInstallOnly={true}
+                        />
+                    </AnimatePresence>
                 </div>
             </div>
         );
     }
 
-    const progress = Math.min((step / 3) * 100, 100);
-
     return (
         <div className="min-h-[600px] flex flex-col">
-            <ProgressBar progress={progress} />
+            <ProgressBar progress={getProgress()} />
             <div className="flex-1 relative">
-                <AnimatePresence mode="wait">{steps[step]}</AnimatePresence>
+                <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
             </div>
         </div>
     );

@@ -19,8 +19,8 @@ interface StepModelProps {
     settings: LLMConnectSettings;
     models: OllamaModel[];
     fetchModels: () => Promise<OllamaModel[]>;
-    /** If true, only pull the model without modifying existing configuration */
     isInstallOnly?: boolean;
+    isCloudProvider?: boolean;
 }
 
 interface OllamaPullProgressPayload {
@@ -38,6 +38,7 @@ export const StepModel = ({
     models,
     fetchModels,
     isInstallOnly = false,
+    isCloudProvider: _isCloudProvider = false,
 }: StepModelProps) => {
     const { t, i18n } = useTranslation();
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
