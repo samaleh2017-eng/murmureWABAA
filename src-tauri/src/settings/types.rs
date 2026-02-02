@@ -72,7 +72,7 @@ impl Default for AppSettings {
             record_mode: "push_to_talk".to_string(),
             overlay_mode: "recording".to_string(),
             overlay_position: "bottom".to_string(),
-            api_enabled: false,
+            api_enabled: true,
             api_port: 4800,
             copy_to_clipboard: false,
             paste_method: PasteMethod::default(),

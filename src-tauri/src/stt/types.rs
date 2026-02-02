@@ -169,7 +169,7 @@ impl Default for STTSettings {
         provider_configs.insert("parakeet".to_string(), STTProviderConfig::parakeet_default());
         provider_configs.insert("openai".to_string(), STTProviderConfig::openai_default());
         provider_configs.insert(
-            "googlecloud".to_string(),
+            "google_cloud".to_string(),
             STTProviderConfig::google_cloud_default(),
         );
         provider_configs.insert("gemini".to_string(), STTProviderConfig::gemini_default());
@@ -212,9 +212,9 @@ impl STTSettings {
             self.provider_configs
                 .insert("openai".to_string(), STTProviderConfig::openai_default());
         }
-        if !self.provider_configs.contains_key("googlecloud") {
+        if !self.provider_configs.contains_key("google_cloud") {
             self.provider_configs.insert(
-                "googlecloud".to_string(),
+                "google_cloud".to_string(),
                 STTProviderConfig::google_cloud_default(),
             );
         }
@@ -233,7 +233,7 @@ pub fn provider_to_key(provider: &STTProvider) -> String {
     match provider {
         STTProvider::Parakeet => "parakeet".to_string(),
         STTProvider::OpenAI => "openai".to_string(),
-        STTProvider::GoogleCloud => "googlecloud".to_string(),
+        STTProvider::GoogleCloud => "google_cloud".to_string(),
         STTProvider::Gemini => "gemini".to_string(),
         STTProvider::Groq => "groq".to_string(),
     }
@@ -244,7 +244,7 @@ pub fn key_to_provider(key: &str) -> Option<STTProvider> {
     match key {
         "parakeet" => Some(STTProvider::Parakeet),
         "openai" => Some(STTProvider::OpenAI),
-        "googlecloud" => Some(STTProvider::GoogleCloud),
+        "google_cloud" => Some(STTProvider::GoogleCloud),
         "gemini" => Some(STTProvider::Gemini),
         "groq" => Some(STTProvider::Groq),
         _ => None,
