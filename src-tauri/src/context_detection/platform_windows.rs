@@ -17,7 +17,7 @@ pub fn get_active_context_impl() -> ActiveContext {
     let mut context = ActiveContext::default();
 
     let hwnd: HWND = unsafe { GetForegroundWindow() };
-    if hwnd == 0 {
+    if hwnd.is_null() {
         debug!("No foreground window found");
         return context;
     }
@@ -70,7 +70,7 @@ fn get_process_info(process_id: u32) -> Option<(String, String)> {
     let handle: HANDLE =
         unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, process_id) };
 
-    if handle == 0 {
+    if handle.is_null() {
         return None;
     }
 
