@@ -3,7 +3,6 @@ use super::types::ActiveContext;
 use log::debug;
 use std::ffi::OsString;
 use std::os::windows::ffi::OsStringExt;
-use std::ptr::null_mut;
 use windows_sys::Win32::Foundation::{CloseHandle, HANDLE, HWND};
 
 const MAX_PATH: usize = 260;
