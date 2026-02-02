@@ -1,6 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BrowserContext {
+    pub url: String,
+    pub title: String,
+    pub browser: String,
+    pub timestamp: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActiveContext {
     pub app_name: String,
     pub process_name: String,
