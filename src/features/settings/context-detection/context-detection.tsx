@@ -15,7 +15,7 @@ import {
 import { useTranslation } from '@/i18n';
 import { useContextMappingSettings } from './hooks/use-context-mapping-settings';
 import { PatternType, ContextRule } from './context-detection.types';
-import { Trash2, Plus, Scan, Loader2 } from 'lucide-react';
+import { Trash2, Plus, Scan, Loader2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PATTERN_TYPES: { value: PatternType; label: string }[] = [
@@ -60,11 +60,13 @@ export const ContextDetection = () => {
         setAutoDetectionEnabled,
         setDefaultModeKey,
         addRule,
+        updateRule,
         deleteRule,
         toggleRuleEnabled,
     } = useContextMappingSettings();
 
     const [showAddForm, setShowAddForm] = useState(false);
+    const [editingRule, setEditingRule] = useState<ContextRule | null>(null);
     const [formData, setFormData] = useState<RuleFormData>(defaultFormData);
 
     const handleAddRule = async () => {
@@ -77,20 +79,50 @@ export const ContextDetection = () => {
         }
 
         try {
-            await addRule({
-                name: formData.name.trim(),
-                pattern: formData.pattern.trim(),
-                patternType: formData.patternType,
-                targetModeKey: formData.targetModeKey,
-                priority: formData.priority,
-                enabled: true,
-            });
+            if (editingRule) {
+                await updateRule(editingRule.id, {
+                    name: formData.name.trim(),
+                    pattern: formData.pattern.trim(),
+                    patternType: formData.patternType,
+                    targetModeIndex: formData.targetModeIndex,
+                    priority: formData.priority,
+                });
+                toast.success(t('Rule updated successfully'));
+                setEditingRule(null);
+            } else {
+                await addRule({
+                    name: formData.name.trim(),
+                    pattern: formData.pattern.trim(),
+                    patternType: formData.patternType,
+                    targetModeIndex: formData.targetModeIndex,
+                    priority: formData.priority,
+                    enabled: true,
+                });
+                toast.success(t('Rule added successfully'));
+            }
             setFormData(defaultFormData);
             setShowAddForm(false);
-            toast.success(t('Rule added successfully'));
         } catch {
-            toast.error(t('Failed to add rule'));
+            toast.error(t(editingRule ? 'Failed to update rule' : 'Failed to add rule'));
         }
+    };
+
+    const handleEditRule = (rule: ContextRule) => {
+        setEditingRule(rule);
+        setFormData({
+            name: rule.name,
+            pattern: rule.pattern,
+            patternType: rule.patternType,
+            targetModeIndex: rule.targetModeIndex,
+            priority: rule.priority,
+        });
+        setShowAddForm(true);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingRule(null);
+        setFormData(defaultFormData);
+        setShowAddForm(false);
     };
 
     const handleDeleteRule = async (rule: ContextRule) => {
@@ -423,15 +455,26 @@ export const ContextDetection = () => {
                                             </Typography.Paragraph>
                                         </div>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon-sm"
-                                        onClick={() => handleDeleteRule(rule)}
-                                        disabled={saving}
-                                        data-testid={`delete-rule-${rule.id}`}
-                                    >
-                                        <Trash2 className="w-4 h-4 text-zinc-400 hover:text-red-400" />
-                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            onClick={() => handleEditRule(rule)}
+                                            disabled={saving}
+                                            data-testid={`edit-rule-${rule.id}`}
+                                        >
+                                            <Pencil className="w-4 h-4 text-zinc-400 hover:text-sky-400" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            onClick={() => handleDeleteRule(rule)}
+                                            disabled={saving}
+                                            data-testid={`delete-rule-${rule.id}`}
+                                        >
+                                            <Trash2 className="w-4 h-4 text-zinc-400 hover:text-red-400" />
+                                        </Button>
+                                    </div>
                                 </div>
                             ))
                         )}

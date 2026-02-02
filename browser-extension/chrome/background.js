@@ -17,7 +17,8 @@ chrome.storage.onChanged.addListener((changes) => {
 async function sendContext(tab) {
   if (!isEnabled || !tab?.url || !tab?.title) return;
 
-  if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+  if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://') ||
+      tab.url.startsWith('edge://') || tab.url.startsWith('extension://')) {
     return;
   }
 

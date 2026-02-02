@@ -35,6 +35,9 @@ pub fn get_active_context() -> ActiveContext {
             context.detected_url = Some(extract_domain(&browser_ctx.url));
             context.window_title = browser_ctx.title;
         }
+    } else if is_browser(&context.app_name, &context.process_name) {
+        context.detected_url =
+            extract_url_from_title(&context.window_title, &context.app_name, &context.process_name);
     }
 
     context

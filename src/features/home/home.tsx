@@ -10,6 +10,7 @@ import { Statistics } from './statistics/statistics';
 import { useTranslation } from '@/i18n';
 import { Onboarding } from '../onboarding/onboarding';
 import { RecordLabel } from '@/components/record-label';
+import { ModelIndicator } from './model-indicator/model-indicator';
 
 export const Home = () => {
     const { shortcut: recordShortcut } = useShortcut(SHORTCUT_CONFIGS.record);
@@ -18,9 +19,12 @@ export const Home = () => {
     return (
         <main className="space-y-4 relative">
             <Page.Header>
-                <Typography.MainTitle className="pb-4" data-testid="home-title">
-                    {t('Welcome aboard!')}
-                </Typography.MainTitle>
+                <div className="flex items-center justify-between pb-4">
+                    <Typography.MainTitle data-testid="home-title">
+                        {t('Welcome aboard!')}
+                    </Typography.MainTitle>
+                    <ModelIndicator />
+                </div>
                 <Statistics className="absolute -top-4 -right-4" />
                 <Onboarding recordShortcut={recordShortcut} />
             </Page.Header>
