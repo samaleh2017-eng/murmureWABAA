@@ -191,6 +191,13 @@ export const LLMConnect = () => {
                     updateSettings={updateSettings}
                     models={models}
                     fetchModels={fetchModels}
+                    testProviderConnection={testProviderConnection}
+                    saveProviderConfig={saveProviderConfig}
+                    setActiveProvider={setActiveProvider}
+                    fetchProviderModels={async (provider, config) => {
+                        const models = await fetchProviderModels(provider, config);
+                        return models.map((m) => m.name);
+                    }}
                     completeOnboarding={async () => {
                         await fetchModels();
                         await updateSettings({ onboarding_completed: true });

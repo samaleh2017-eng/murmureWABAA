@@ -19,7 +19,6 @@ interface StepModelProps {
     settings: LLMConnectSettings;
     models: OllamaModel[];
     fetchModels: () => Promise<OllamaModel[]>;
-    /** If true, only pull the model without modifying existing configuration */
     isInstallOnly?: boolean;
 }
 

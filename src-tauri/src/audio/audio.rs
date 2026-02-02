@@ -105,6 +105,7 @@ pub fn stop_recording(app: &AppHandle) -> Option<std::path::PathBuf> {
                 }
                 Err(e) => {
                     error!("Processing failed: {}", e);
+                    let _ = app.emit("transcription-error", e.to_string());
                 }
             }
         }
