@@ -1,21 +1,21 @@
 # Murmure Browser Extension
 
-Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif) à Murmure pour améliorer la détection de contexte lors de la transcription.
+Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif) à Murmure en **temps réel via WebSocket**.
 
-## ⚠️ Prérequis important
- 
-**L'API HTTP locale est désactivée par défaut.** Vous devez l'activer manuellement :
+## Fonctionnement
 
-1. Ouvrir **Murmure**
-2. Aller dans **Settings → System**
-3. Activer **API HTTP locale** (Expérimental)
-4. Le port par défaut est `4800`
-5. Redémarrer Murmure si nécessaire
+L'extension maintient une connexion WebSocket permanente avec Murmure :
+- ✅ **Temps réel** : Le contexte est mis à jour instantanément
+- ✅ **Pas de TTL** : Pas d'expiration arbitraire
+- ✅ **Auto-nettoyage** : Quand le navigateur ferme, le contexte disparaît automatiquement
+- ✅ **Fallback HTTP** : Si WebSocket échoue, utilise HTTP classique
 
-> Sans cette activation, l'extension affichera "Murmure non détecté".
+## Prérequis
 
 - Murmure doit être lancé avec l'API HTTP activée (Settings → System → API)
-- Port par défaut: `4800`
+- L'API HTTP locale est **activée par défaut** sur le port `4800`
+- WebSocket : `ws://127.0.0.1:4800/ws/context`
+- HTTP fallback : `http://127.0.0.1:4800/api/context`
 
 
 ## Installation en mode développeur

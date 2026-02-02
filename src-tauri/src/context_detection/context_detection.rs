@@ -31,8 +31,10 @@ pub fn get_active_context() -> ActiveContext {
     let mut context = ActiveContext::default();
 
     if let Some(browser_ctx) = browser_state::get_browser_context() {
-        if is_browser(&context.app_name, &context.process_name) {
+        if !browser_ctx.url.is_empty() {
             context.detected_url = Some(extract_domain(&browser_ctx.url));
+        }
+        if is_browser(&context.app_name, &context.process_name) {
             context.window_title = browser_ctx.title;
         }
     } else if is_browser(&context.app_name, &context.process_name) {

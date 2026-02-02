@@ -42,7 +42,8 @@ enigo = "0.6"
 rphonetic = "3.0.6"
 tokio = { version = "1", features = ["full"] }
 text2num = "2.6.2"
-axum = { version = "0.8", features = ["multipart"] }
+axum = { version = "0.8", features = ["multipart", "ws"] }
+tokio-tungstenite = "0.26"
 hyper = "1"
 tower-http = { version = "0.6", features = ["cors"] }
 uuid = { version = "1", features = ["v4"] }

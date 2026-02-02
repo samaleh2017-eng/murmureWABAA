@@ -1,16 +1,19 @@
-use crate::audio;
-use crate::context_detection::browser_state::set_browser_context;
+use crate::context_detection::browser_state::{remove_browser_context, set_browser_context_http, set_browser_context_ws};
 use crate::context_detection::BrowserContext;
 use crate::dictionary::{fix_transcription_with_dictionary, get_cc_rules_path, Dictionary};
 use anyhow::Result;
 use axum::{
-    extract::{DefaultBodyLimit, Multipart},
+    extract::{
+        ws::{Message, WebSocket},
+        DefaultBodyLimit, Multipart, WebSocketUpgrade,
+    },
     http::{Method, StatusCode},
     response::IntoResponse,
-    routing::post,
+    routing::{get, post},
     Json, Router,
 };
-use log::info;
+use futures_util::{SinkExt, StreamExt};
+use log::{debug, info, warn};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -49,12 +52,13 @@ pub async fn start_http_api(
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
-        .allow_methods([Method::POST, Method::OPTIONS])
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
         .allow_headers(Any);
 
     let router = Router::new()
         .route("/api/transcribe", post(transcribe_handler))
         .route("/api/context", post(context_handler))
+        .route("/ws/context", get(websocket_handler))
         .with_state(app.clone())
         .layer(cors)
         .layer(DefaultBodyLimit::max(100_000_000));
@@ -63,6 +67,7 @@ pub async fn start_http_api(
     let listener = tokio::net::TcpListener::bind(&addr).await?;
 
     info!("HTTP API listening on http://{}", addr);
+    info!("WebSocket available at ws://{}/ws/context", addr);
 
     let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel::<()>();
     api_state.set_shutdown_sender(shutdown_tx);
@@ -79,6 +84,72 @@ pub async fn start_http_api(
     }
 
     Ok(())
+}
+
+async fn websocket_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
+    ws.on_upgrade(handle_websocket)
+}
+
+async fn handle_websocket(socket: WebSocket) {
+    let connection_id = uuid::Uuid::new_v4().to_string();
+    info!("WebSocket connected: {}", connection_id);
+
+    let (mut sender, mut receiver) = socket.split();
+
+    let conn_id = connection_id.clone();
+    while let Some(msg) = receiver.next().await {
+        match msg {
+            Ok(Message::Text(text)) => {
+                match serde_json::from_str::<ContextRequest>(&text) {
+                    Ok(context_req) => {
+                        let timestamp = SystemTime::now()
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap()
+                            .as_millis() as u64;
+
+                        let context = BrowserContext {
+                            url: context_req.url,
+                            title: context_req.title,
+                            browser: context_req.browser,
+                            timestamp,
+                        };
+
+                        set_browser_context_ws(&conn_id, context);
+                        debug!("WebSocket context updated from {}", conn_id);
+
+                        let response = serde_json::json!({"status": "ok"});
+                        if sender
+                            .send(Message::Text(response.to_string().into()))
+                            .await
+                            .is_err()
+                        {
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        warn!("Invalid WebSocket message: {}", e);
+                    }
+                }
+            }
+            Ok(Message::Close(_)) => {
+                info!("WebSocket close received: {}", conn_id);
+                break;
+            }
+            Ok(Message::Ping(data)) => {
+                if sender.send(Message::Pong(data)).await.is_err() {
+                    break;
+                }
+            }
+            Err(e) => {
+                warn!("WebSocket error: {}", e);
+                break;
+            }
+            _ => {}
+        }
+    }
+
+    remove_browser_context(&connection_id);
+    info!("WebSocket disconnected: {}", connection_id);
 }
 
 async fn transcribe_handler(
@@ -115,8 +186,8 @@ async fn transcribe_handler(
                             .into_response();
                     }
 
-                    let result = match audio::preload_engine(&app) {
-                        Ok(_) => match audio::transcribe_audio(&app, &temp_path) {
+                    let result = match crate::audio::preload_engine(&app) {
+                        Ok(_) => match crate::audio::transcribe_audio(&app, &temp_path) {
                             Ok(raw_text) => {
                                 let text = match get_cc_rules_path(&app) {
                                     Ok(cc_rules_path) => {
@@ -186,7 +257,7 @@ async fn context_handler(Json(payload): Json<ContextRequest>) -> impl IntoRespon
         timestamp,
     };
 
-    set_browser_context(context);
+    set_browser_context_http(context);
 
     (
         StatusCode::OK,
