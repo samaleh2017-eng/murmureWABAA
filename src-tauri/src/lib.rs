@@ -3,6 +3,7 @@
 mod audio;
 mod clipboard;
 mod commands;
+mod context_detection;
 mod dictionary;
 mod engine;
 mod formatting_rules;
@@ -235,7 +236,8 @@ pub fn run() {
             fetch_stt_provider_models,
             save_stt_provider_config,
             get_stt_provider_config,
-            get_available_stt_providers
+            get_available_stt_providers,
+            get_current_context
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
