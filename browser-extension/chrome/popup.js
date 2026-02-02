@@ -11,14 +11,14 @@ toggle.addEventListener('change', () => {
 
 async function checkConnection() {
   try {
-    const response = await fetch('http://127.0.0.1:4800/api/context', {
+    await fetch('http://127.0.0.1:4800/api/context', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: '', title: '', browser: 'chrome' })
     });
     status.textContent = 'Connecté à Murmure ✓';
     status.className = 'status connected';
-  } catch (e) {
+  } catch {
     status.textContent = 'Murmure non détecté';
     status.className = 'status disconnected';
   }

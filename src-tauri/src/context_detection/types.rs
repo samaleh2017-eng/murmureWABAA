@@ -8,21 +8,14 @@ pub struct BrowserContext {
     pub timestamp: u64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ActiveContext {
+    #[serde(default)]
     pub app_name: String,
+    #[serde(default)]
     pub process_name: String,
+    #[serde(default)]
     pub window_title: String,
+    #[serde(default)]
     pub detected_url: Option<String>,
-}
-
-impl Default for ActiveContext {
-    fn default() -> Self {
-        Self {
-            app_name: String::new(),
-            process_name: String::new(),
-            window_title: String::new(),
-            detected_url: None,
-        }
-    }
 }
