@@ -5,7 +5,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 static BROWSER_CONTEXT: Lazy<RwLock<Option<BrowserContext>>> = Lazy::new(|| RwLock::new(None));
 
-const CONTEXT_TTL_MS: u64 = 5000;
+const CONTEXT_TTL_MS: u64 = 30000;
 
 pub fn set_browser_context(context: BrowserContext) {
     *BROWSER_CONTEXT.write() = Some(context);
