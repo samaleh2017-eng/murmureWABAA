@@ -2,17 +2,30 @@ import { Outlet, useNavigate } from '@tanstack/react-router';
 import { SidebarProvider, SidebarInset } from '../../components/sidebar';
 import { AppSidebar } from './app-sidebar/app-sidebar';
 import clsx from 'clsx';
-import { Bounce, ToastContainer } from 'react-toastify';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
 import { StatusBar } from '@/components/status-bar';
 import { useModelDownload } from '@/features/model-setup/hooks/use-model-download';
 import { useGetVersion } from './hooks/use-get-version';
 import { useEffect, useRef } from 'react';
+import { listen } from '@tauri-apps/api/event';
+import { useTranslation } from '@/i18n';
 
 export const Layout = () => {
     const { progress, isModelAvailable, cancelDownload } = useModelDownload();
     const version = useGetVersion();
     const navigate = useNavigate();
     const hasRedirected = useRef(false);
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        const unlisten = listen<string>('transcription-error', (event) => {
+            toast.error(t('Transcription failed') + ': ' + event.payload);
+        });
+
+        return () => {
+            unlisten.then((fn) => fn());
+        };
+    }, [t]);
 
     useEffect(() => {
         if (

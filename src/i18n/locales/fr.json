@@ -338,6 +338,7 @@
     "Speech-to-Text": "Reconnaissance vocale",
     "Configure how Murmure transcribes your voice": "Configurez comment Murmure transcrit votre voix",
     "Transcription Mode": "Mode de transcription",
+    "Transcription failed": "Échec de la transcription",
     "Choose between offline (local) and online (cloud) transcription": "Choisissez entre la transcription hors ligne (locale) et en ligne (cloud)",
     "Parakeet - 100% private": "Parakeet - 100% privé",
     "Cloud STT - Ultra-fast": "STT Cloud - Ultra-rapide",

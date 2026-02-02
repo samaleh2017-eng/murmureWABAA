@@ -31,11 +31,19 @@ export const Overlay: React.FC = () => {
             setFeedback(event.payload);
             setIsError(true);
         });
+        const unlistenTranscriptionErrorPromise = listen<string>(
+            'transcription-error',
+            (event) => {
+                setFeedback(event.payload);
+                setIsError(true);
+            }
+        );
 
         return () => {
             unlistenPromise.then((unlisten) => unlisten());
             unlistenSettingsPromise.then((unlisten) => unlisten());
             unlistenErrorPromise.then((unlisten) => unlisten());
+            unlistenTranscriptionErrorPromise.then((unlisten) => unlisten());
         };
     }, []);
 
