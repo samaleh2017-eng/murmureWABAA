@@ -351,5 +351,9 @@
     "Groq Whisper": "Groq Whisper",
     "How would you like to transcribe?": "Comment souhaitez-vous transcrire ?",
     "~350MB download": "~350 Mo de téléchargement",
-    "Back": "Retour"
+    "Back": "Retour",
+    "Email": "Email",
+    "Chat": "Chat",
+    "Use for professional emails with formal tone.": "Pour rédiger des emails professionnels avec un ton formel.",
+    "Use for casual messaging with emojis.": "Pour les messages décontractés avec emojis."
 }
