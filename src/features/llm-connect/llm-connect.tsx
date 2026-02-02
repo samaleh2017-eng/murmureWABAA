@@ -199,7 +199,13 @@ export const LLMConnect = () => {
                         return models.map((m) => m.name);
                     }}
                     completeOnboarding={async () => {
-                        await fetchModels();
+                        if (settings.active_provider === 'ollama') {
+                            try {
+                                await fetchModels();
+                            } catch {
+                                // Ignore fetch error for Ollama
+                            }
+                        }
                         await updateSettings({ onboarding_completed: true });
                     }}
                 />
