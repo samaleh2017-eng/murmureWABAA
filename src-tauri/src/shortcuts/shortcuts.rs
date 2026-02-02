@@ -114,6 +114,7 @@ fn start_recording<F>(
 ) where
     F: FnOnce(),
 {
+    crate::context_detection::auto_switch_mode_if_enabled(app);
     crate::onboarding::onboarding::capture_focus_at_record_start(app);
     start_fn();
     *recording_source = target;

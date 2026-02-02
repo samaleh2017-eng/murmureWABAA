@@ -26,20 +26,20 @@ const PATTERN_TYPES: { value: PatternType; label: string }[] = [
 ];
 
 const LLM_MODES = [
-    { index: 0, name: 'General' },
-    { index: 1, name: 'Formal' },
-    { index: 2, name: 'Casual' },
-    { index: 3, name: 'Developer' },
-    { index: 4, name: 'Translation' },
-    { index: 5, name: 'Email' },
-    { index: 6, name: 'Chat' },
+    { key: 'general', name: 'General' },
+    { key: 'medical', name: 'Medical' },
+    { key: 'typescript', name: 'Typescript' },
+    { key: 'developer', name: 'Developer' },
+    { key: 'email', name: 'Email' },
+    { key: 'chat', name: 'Chat' },
+    { key: 'translation', name: 'Translation' },
 ];
 
 interface RuleFormData {
     name: string;
     pattern: string;
     patternType: PatternType;
-    targetModeIndex: number;
+    targetModeKey: string;
     priority: number;
 }
 
@@ -47,7 +47,7 @@ const defaultFormData: RuleFormData = {
     name: '',
     pattern: '',
     patternType: 'process_name',
-    targetModeIndex: 0,
+    targetModeKey: 'general',
     priority: 50,
 };
 
@@ -58,7 +58,7 @@ export const ContextDetection = () => {
         loading,
         saving,
         setAutoDetectionEnabled,
-        setDefaultModeIndex,
+        setDefaultModeKey,
         addRule,
         updateRule,
         deleteRule,
@@ -206,9 +206,9 @@ export const ContextDetection = () => {
                                 </Typography.Paragraph>
                             </SettingsUI.Description>
                             <Select
-                                value={String(settings.defaultModeIndex)}
+                                value={settings.defaultModeKey}
                                 onValueChange={(value) =>
-                                    setDefaultModeIndex(parseInt(value, 10))
+                                    setDefaultModeKey(value)
                                 }
                                 disabled={saving}
                             >
@@ -221,8 +221,8 @@ export const ContextDetection = () => {
                                 <SelectContent>
                                     {LLM_MODES.map((mode) => (
                                         <SelectItem
-                                            key={mode.index}
-                                            value={String(mode.index)}
+                                            key={mode.key}
+                                            value={mode.key}
                                         >
                                             {t(mode.name)}
                                         </SelectItem>
@@ -322,14 +322,11 @@ export const ContextDetection = () => {
                                         {t('Target Mode')}
                                     </label>
                                     <Select
-                                        value={String(formData.targetModeIndex)}
+                                        value={formData.targetModeKey}
                                         onValueChange={(value) =>
                                             setFormData({
                                                 ...formData,
-                                                targetModeIndex: parseInt(
-                                                    value,
-                                                    10
-                                                ),
+                                                targetModeKey: value,
                                             })
                                         }
                                     >
@@ -339,8 +336,8 @@ export const ContextDetection = () => {
                                         <SelectContent>
                                             {LLM_MODES.map((mode) => (
                                                 <SelectItem
-                                                    key={mode.index}
-                                                    value={String(mode.index)}
+                                                    key={mode.key}
+                                                    value={mode.key}
                                                 >
                                                     {t(mode.name)}
                                                 </SelectItem>
@@ -448,9 +445,9 @@ export const ContextDetection = () => {
                                                 {t(
                                                     LLM_MODES.find(
                                                         (m) =>
-                                                            m.index ===
-                                                            rule.targetModeIndex
-                                                    )?.name || 'Unknown'
+                                                            m.key ===
+                                                            rule.targetModeKey
+                                                    )?.name || rule.targetModeKey
                                                 )}
                                                 {' ('}
                                                 {t('Priority')}: {rule.priority}

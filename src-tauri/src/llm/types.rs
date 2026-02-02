@@ -130,6 +130,8 @@ pub struct LLMMode {
     pub shortcut: String,
     #[serde(default)]
     pub provider: Option<LLMProvider>,
+    #[serde(default)]
+    pub key: Option<String>,
 }
 
 impl Default for LLMConnectSettings {

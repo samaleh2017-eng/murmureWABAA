@@ -3,7 +3,7 @@ use futures_util::StreamExt;
 use log::{debug, error, info};
 use parking_lot::Mutex;
 use std::io::{Read, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
@@ -41,7 +41,7 @@ fn get_model_download_path(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(resources_dir)
 }
 
-fn extract_zip(zip_path: &PathBuf, extract_to: &PathBuf) -> Result<(), String> {
+fn extract_zip(zip_path: &Path, extract_to: &Path) -> Result<(), String> {
     let file =
         std::fs::File::open(zip_path).map_err(|e| format!("Failed to open zip file: {}", e))?;
 

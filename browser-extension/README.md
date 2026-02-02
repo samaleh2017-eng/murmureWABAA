@@ -3,7 +3,7 @@
 Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif) à Murmure pour améliorer la détection de contexte lors de la transcription.
 
 ## ⚠️ Prérequis important
-
+ 
 **L'API HTTP locale est désactivée par défaut.** Vous devez l'activer manuellement :
 
 1. Ouvrir **Murmure**
@@ -13,6 +13,10 @@ Cette extension envoie le contexte de navigation (URL et titre de l'onglet actif
 5. Redémarrer Murmure si nécessaire
 
 > Sans cette activation, l'extension affichera "Murmure non détecté".
+
+- Murmure doit être lancé avec l'API HTTP activée (Settings → System → API)
+- Port par défaut: `4800`
+
 
 ## Installation en mode développeur
 

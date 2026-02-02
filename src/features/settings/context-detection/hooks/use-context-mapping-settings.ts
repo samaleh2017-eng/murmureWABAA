@@ -10,7 +10,7 @@ interface RawContextRule {
     name: string;
     pattern: string;
     pattern_type: string;
-    target_mode_index: number;
+    target_mode_key: string;
     priority: number;
     enabled: boolean;
 }
@@ -18,20 +18,20 @@ interface RawContextRule {
 interface RawContextMappingSettings {
     auto_detection_enabled: boolean;
     rules: RawContextRule[];
-    default_mode_index: number;
+    default_mode_key: string;
 }
 
 const convertFromRaw = (
     raw: RawContextMappingSettings
 ): ContextMappingSettings => ({
     autoDetectionEnabled: raw.auto_detection_enabled,
-    defaultModeIndex: raw.default_mode_index,
+    defaultModeKey: raw.default_mode_key,
     rules: raw.rules.map((rule) => ({
         id: rule.id,
         name: rule.name,
         pattern: rule.pattern,
         patternType: rule.pattern_type as ContextRule['patternType'],
-        targetModeIndex: rule.target_mode_index,
+        targetModeKey: rule.target_mode_key,
         priority: rule.priority,
         enabled: rule.enabled,
     })),
@@ -41,13 +41,13 @@ const convertToRaw = (
     settings: ContextMappingSettings
 ): RawContextMappingSettings => ({
     auto_detection_enabled: settings.autoDetectionEnabled,
-    default_mode_index: settings.defaultModeIndex,
+    default_mode_key: settings.defaultModeKey,
     rules: settings.rules.map((rule) => ({
         id: rule.id,
         name: rule.name,
         pattern: rule.pattern,
         pattern_type: rule.patternType,
-        target_mode_index: rule.targetModeIndex,
+        target_mode_key: rule.targetModeKey,
         priority: rule.priority,
         enabled: rule.enabled,
     })),
@@ -110,12 +110,12 @@ export const useContextMappingSettings = () => {
         [settings, saveSettings]
     );
 
-    const setDefaultModeIndex = useCallback(
-        async (index: number) => {
+    const setDefaultModeKey = useCallback(
+        async (key: string) => {
             if (settings == null) {
                 return;
             }
-            const newSettings = { ...settings, defaultModeIndex: index };
+            const newSettings = { ...settings, defaultModeKey: key };
             await saveSettings(newSettings);
         },
         [settings, saveSettings]
@@ -187,7 +187,7 @@ export const useContextMappingSettings = () => {
         loading,
         saving,
         setAutoDetectionEnabled,
-        setDefaultModeIndex,
+        setDefaultModeKey,
         addRule,
         updateRule,
         deleteRule,
