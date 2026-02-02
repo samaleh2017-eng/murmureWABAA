@@ -8,6 +8,9 @@ import { LLMHeader } from './components/llm-header';
 import { ModeTabs } from './components/mode-tabs';
 import { ModeContent } from './components/mode-content';
 import { LLMAdvancedSettings } from './components/llm-advanced-settings';
+import { ContextRulesTab } from './components/context-rules-tab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/tabs';
+import { Sparkles, Scan, Settings2 } from 'lucide-react';
 
 export const LLMConnect = () => {
     const { t, i18n } = useTranslation();
@@ -31,6 +34,7 @@ export const LLMConnect = () => {
     } = useLLMConnect();
 
     const [showModelSelector, setShowModelSelector] = useState(false);
+    const [activeTab, setActiveTab] = useState('modes');
 
     const activeModeIndex = settings.active_mode_index;
     const activeMode = settings.modes[activeModeIndex];
@@ -199,7 +203,13 @@ export const LLMConnect = () => {
                         return models.map((m) => m.name);
                     }}
                     completeOnboarding={async () => {
-                        await fetchModels();
+                        if (settings.active_provider === 'ollama') {
+                            try {
+                                await fetchModels();
+                            } catch {
+                                // Ignore fetch error for Ollama
+                            }
+                        }
                         await updateSettings({ onboarding_completed: true });
                     }}
                 />
@@ -214,25 +224,48 @@ export const LLMConnect = () => {
             <div className="space-y-6">
                 <LLMHeader connectionStatus={connectionStatus} />
 
-                <ModeTabs
-                    modes={settings.modes}
-                    activeModeIndex={activeModeIndex}
-                    models={currentModels}
-                    updateSettings={updateSettings}
-                />
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                        <TabsTrigger value="modes" className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            {t('Modes')}
+                        </TabsTrigger>
+                        <TabsTrigger value="context" className="flex items-center gap-2">
+                            <Scan className="w-4 h-4" />
+                            {t('Context Detection')}
+                        </TabsTrigger>
+                        <TabsTrigger value="settings" className="flex items-center gap-2">
+                            <Settings2 className="w-4 h-4" />
+                            {t('Settings')}
+                        </TabsTrigger>
+                    </TabsList>
 
-                {activeMode && (
-                    <>
-                        <ModeContent
-                            activeMode={activeMode}
-                            activeModeIndex={activeModeIndex}
+                    <TabsContent value="modes" className="space-y-6">
+                        <ModeTabs
                             modes={settings.modes}
+                            activeModeIndex={activeModeIndex}
                             models={currentModels}
-                            isLoading={isLoading}
                             updateSettings={updateSettings}
-                            onRefreshModels={handleTestConnection}
                         />
 
+                        {activeMode && (
+                            <ModeContent
+                                activeMode={activeMode}
+                                activeModeIndex={activeModeIndex}
+                                modes={settings.modes}
+                                models={currentModels}
+                                isLoading={isLoading}
+                                updateSettings={updateSettings}
+                                onRefreshModels={handleTestConnection}
+                            />
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="context">
+                        <ContextRulesTab modes={settings.modes} />
+                    </TabsContent>
+
+                    <TabsContent value="settings">
                         <LLMAdvancedSettings
                             url={settings.url}
                             activeProvider={activeProvider}
@@ -251,8 +284,8 @@ export const LLMConnect = () => {
                             }
                             onFetchProviderModels={handleFetchProviderModels}
                         />
-                    </>
-                )}
+                    </TabsContent>
+                </Tabs>
             </div>
         </main>
     );

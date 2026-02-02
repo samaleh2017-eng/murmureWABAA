@@ -13,7 +13,6 @@ import { CustomDictionary } from './features/settings/custom-dictionary/custom-d
 import { FormattingRules } from './features/settings/formatting-rules/formatting-rules';
 import { System } from './features/settings/system/system';
 import { STTSettings } from './features/settings/stt/stt-settings';
-import { ContextDetection } from './features/settings/context-detection/context-detection';
 import { LLMConnect } from './features/llm-connect/llm-connect';
 import { ModelSetupLayout } from './features/model-setup/model-setup-layout';
 import { ModelSetup } from './features/model-setup/model-setup';
@@ -79,7 +78,7 @@ const settingsSTTRoute = createRoute({
 const settingsContextDetectionRoute = createRoute({
     getParentRoute: () => layoutRoute,
     path: '/settings/context-detection',
-    component: ContextDetection,
+    component: () => <Navigate to="/personalize/llm-connect" />,
 });
 
 const settingsIndexRoute = createRoute({
