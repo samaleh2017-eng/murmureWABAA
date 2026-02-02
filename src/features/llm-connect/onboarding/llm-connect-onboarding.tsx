@@ -25,7 +25,7 @@ interface LLMConnectOnboardingProps {
     fetchProviderModels?: (provider: LLMProvider, config: ProviderConfig) => Promise<string[]>;
 }
 
-type FlowStep = 'intro' | 'choice' | 'ollama-install' | 'ollama-model' | 'cloud-config' | 'cloud-model' | 'success';
+type FlowStep = 'intro' | 'choice' | 'ollama-install' | 'ollama-model' | 'cloud-config' | 'success';
 
 export const LLMConnectOnboarding = ({
     settings,
@@ -59,11 +59,10 @@ export const LLMConnectOnboarding = ({
     const getProgress = (): number => {
         const progressMap: Record<FlowStep, number> = {
             'intro': 0,
-            'choice': 20,
-            'ollama-install': 40,
-            'ollama-model': 70,
-            'cloud-config': 40,
-            'cloud-model': 70,
+            'choice': 25,
+            'ollama-install': 50,
+            'ollama-model': 75,
+            'cloud-config': 60,
             'success': 100,
         };
         return progressMap[step] || 0;
@@ -104,27 +103,12 @@ export const LLMConnectOnboarding = ({
                 return (
                     <StepCloudConfig
                         key="cloud-config"
-                        onNext={() => setStep('cloud-model')}
+                        onNext={() => setStep('success')}
                         onBack={() => setStep('choice')}
                         testProviderConnection={testProviderConnection || (async () => false)}
                         saveProviderConfig={saveProviderConfig || (async () => {})}
                         setActiveProvider={setActiveProvider || (async () => {})}
                         fetchProviderModels={fetchProviderModels || (async () => [])}
-                    />
-                );
-
-            case 'cloud-model':
-                return (
-                    <StepModel
-                        key="cloud-model"
-                        onNext={isInstallOnly ? handleComplete : () => setStep('success')}
-                        pullModel={pullModel}
-                        updateSettings={updateSettings}
-                        settings={settings}
-                        models={models}
-                        fetchModels={fetchModels}
-                        isInstallOnly={isInstallOnly}
-                        isCloudProvider={true}
                     />
                 );
 

@@ -20,7 +20,6 @@ interface StepModelProps {
     models: OllamaModel[];
     fetchModels: () => Promise<OllamaModel[]>;
     isInstallOnly?: boolean;
-    isCloudProvider?: boolean;
 }
 
 interface OllamaPullProgressPayload {
@@ -38,7 +37,6 @@ export const StepModel = ({
     models,
     fetchModels,
     isInstallOnly = false,
-    isCloudProvider: _isCloudProvider = false,
 }: StepModelProps) => {
     const { t, i18n } = useTranslation();
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
