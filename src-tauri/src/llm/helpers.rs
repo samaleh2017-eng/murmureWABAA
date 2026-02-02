@@ -34,6 +34,7 @@ pub fn load_llm_connect_settings(app: &AppHandle) -> LLMConnectSettings {
             model: settings.model.clone(),
             shortcut: "Ctrl+Shift+1".to_string(),
             provider: None,
+            key: Some("general".to_string()),
         };
         settings.modes.push(mode);
         settings.active_mode_index = 0;

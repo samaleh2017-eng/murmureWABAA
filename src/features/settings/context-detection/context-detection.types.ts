@@ -5,7 +5,7 @@ export interface ContextRule {
     name: string;
     pattern: string;
     patternType: PatternType;
-    targetModeIndex: number;
+    targetModeKey: string;
     priority: number;
     enabled: boolean;
 }
@@ -13,14 +13,14 @@ export interface ContextRule {
 export interface ContextMappingSettings {
     autoDetectionEnabled: boolean;
     rules: ContextRule[];
-    defaultModeIndex: number;
+    defaultModeKey: string;
 }
 
 export interface ContextRuleFormData {
     name: string;
     pattern: string;
     patternType: PatternType;
-    targetModeIndex: number;
+    targetModeKey: string;
     priority: number;
     enabled: boolean;
 }

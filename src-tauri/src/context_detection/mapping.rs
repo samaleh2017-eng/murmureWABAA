@@ -8,7 +8,7 @@ pub struct ContextRule {
     pub name: String,
     pub pattern: String,
     pub pattern_type: PatternType,
-    pub target_mode_index: usize,
+    pub target_mode_key: String,
     pub priority: u32,
     pub enabled: bool,
 }
@@ -26,7 +26,7 @@ pub enum PatternType {
 pub struct ContextMappingSettings {
     pub auto_detection_enabled: bool,
     pub rules: Vec<ContextRule>,
-    pub default_mode_index: usize,
+    pub default_mode_key: String,
 }
 
 impl Default for ContextMappingSettings {
@@ -34,7 +34,7 @@ impl Default for ContextMappingSettings {
         Self {
             auto_detection_enabled: true,
             rules: default_rules(),
-            default_mode_index: 0,
+            default_mode_key: "general".to_string(),
         }
     }
 }
@@ -46,7 +46,7 @@ fn default_rules() -> Vec<ContextRule> {
             name: "VS Code → Developer".to_string(),
             pattern: "code".to_string(),
             pattern_type: PatternType::ProcessName,
-            target_mode_index: 3,
+            target_mode_key: "developer".to_string(),
             priority: 100,
             enabled: true,
         },
@@ -55,7 +55,7 @@ fn default_rules() -> Vec<ContextRule> {
             name: "Cursor → Developer".to_string(),
             pattern: "cursor".to_string(),
             pattern_type: PatternType::ProcessName,
-            target_mode_index: 3,
+            target_mode_key: "developer".to_string(),
             priority: 100,
             enabled: true,
         },
@@ -64,7 +64,7 @@ fn default_rules() -> Vec<ContextRule> {
             name: "Gmail → Email".to_string(),
             pattern: "mail.google".to_string(),
             pattern_type: PatternType::Url,
-            target_mode_index: 5,
+            target_mode_key: "email".to_string(),
             priority: 90,
             enabled: true,
         },
@@ -73,7 +73,7 @@ fn default_rules() -> Vec<ContextRule> {
             name: "Outlook → Email".to_string(),
             pattern: "outlook".to_string(),
             pattern_type: PatternType::Url,
-            target_mode_index: 5,
+            target_mode_key: "email".to_string(),
             priority: 90,
             enabled: true,
         },
@@ -82,7 +82,7 @@ fn default_rules() -> Vec<ContextRule> {
             name: "Slack → Chat".to_string(),
             pattern: "slack".to_string(),
             pattern_type: PatternType::AppName,
-            target_mode_index: 6,
+            target_mode_key: "chat".to_string(),
             priority: 80,
             enabled: true,
         },
@@ -91,7 +91,7 @@ fn default_rules() -> Vec<ContextRule> {
             name: "Discord → Chat".to_string(),
             pattern: "discord".to_string(),
             pattern_type: PatternType::AppName,
-            target_mode_index: 6,
+            target_mode_key: "chat".to_string(),
             priority: 80,
             enabled: true,
         },
@@ -100,16 +100,16 @@ fn default_rules() -> Vec<ContextRule> {
             name: "WhatsApp → Chat".to_string(),
             pattern: "whatsapp".to_string(),
             pattern_type: PatternType::AppName,
-            target_mode_index: 6,
+            target_mode_key: "chat".to_string(),
             priority: 80,
             enabled: true,
         },
     ]
 }
 
-pub fn find_matching_mode(context: &ActiveContext, settings: &ContextMappingSettings) -> usize {
+pub fn find_matching_mode(context: &ActiveContext, settings: &ContextMappingSettings) -> String {
     if !settings.auto_detection_enabled {
-        return settings.default_mode_index;
+        return settings.default_mode_key.clone();
     }
 
     let mut matched_rules: Vec<&ContextRule> = settings
@@ -122,8 +122,8 @@ pub fn find_matching_mode(context: &ActiveContext, settings: &ContextMappingSett
 
     matched_rules
         .first()
-        .map(|r| r.target_mode_index)
-        .unwrap_or(settings.default_mode_index)
+        .map(|r| r.target_mode_key.clone())
+        .unwrap_or_else(|| settings.default_mode_key.clone())
 }
 
 fn matches_pattern(context: &ActiveContext, rule: &ContextRule) -> bool {
@@ -154,7 +154,7 @@ mod tests {
         };
         let settings = ContextMappingSettings::default();
         let mode = find_matching_mode(&context, &settings);
-        assert_eq!(mode, 3);
+        assert_eq!(mode, "developer");
     }
 
     #[test]
@@ -167,7 +167,7 @@ mod tests {
         };
         let settings = ContextMappingSettings::default();
         let mode = find_matching_mode(&context, &settings);
-        assert_eq!(mode, 5);
+        assert_eq!(mode, "email");
     }
 
     #[test]
@@ -180,7 +180,7 @@ mod tests {
         };
         let settings = ContextMappingSettings::default();
         let mode = find_matching_mode(&context, &settings);
-        assert_eq!(mode, 0);
+        assert_eq!(mode, "general");
     }
 
     #[test]
@@ -194,6 +194,6 @@ mod tests {
         let mut settings = ContextMappingSettings::default();
         settings.auto_detection_enabled = false;
         let mode = find_matching_mode(&context, &settings);
-        assert_eq!(mode, 0);
+        assert_eq!(mode, "general");
     }
 }

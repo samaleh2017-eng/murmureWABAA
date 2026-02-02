@@ -30,6 +30,7 @@ export interface LLMMode {
     model: string;
     shortcut: string;
     provider?: LLMProvider;
+    key?: string;
 }
 
 export interface LLMConnectSettings {
