@@ -1,4 +1,5 @@
 pub mod clipboard;
+pub mod context;
 pub mod dictionary;
 pub mod formatting_rules;
 pub mod history;
@@ -14,6 +15,7 @@ pub mod stats;
 pub mod stt;
 
 pub use clipboard::*;
+pub use context::*;
 pub use dictionary::*;
 pub use formatting_rules::*;
 pub use history::*;
